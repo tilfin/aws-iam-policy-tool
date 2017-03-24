@@ -1,0 +1,20 @@
+{
+  "name": "aws-iam-tool",
+  "version": "0.1.0",
+  "description": "AWS IAM control tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "AWS",
+    "IAM"
+  ],
+  "author": "Toshimitsu Takahashi",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.31.0",
+    "promised-lifestream": "^0.5.0",
+    "through2": "^2.0.3"
+  }
+}
