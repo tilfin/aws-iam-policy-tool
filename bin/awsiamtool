@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const version = require('../package.json').version;
+
+program
+  .version(version)
+  .description('AWS IAM export/import policy/role management tool')
+  .command('export-policy <dir> <matcher>', 'export polies to target directory')
+  .command('export-role <dir> <matcher>', 'export roles to target directory')
+  .command('import-policy <dir>', 'import policies from target directory')
+  .command('import-role <dir>', 'import policies from target directory')
+  .command('delete-policy <matcher>', 'delete policies specified regular expression matches')
+  .parse(process.argv);
