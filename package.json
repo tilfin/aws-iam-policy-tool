@@ -1,11 +1,13 @@
 {
   "name": "aws-iam-tool",
-  "version": "0.2.0",
-  "description": "AWS IAM control tool",
+  "version": "0.3.0",
+  "description": "AWS IAM role/policy management tool",
   "main": "index.js",
-  "bin": { "awsiamtool": "./bin/awsiamtool" },
+  "bin": {
+    "awsiamtool": "./bin/awsiamtool"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "keywords": [
     "AWS",
@@ -18,5 +20,10 @@
     "commander": "^2.11.0",
     "promised-lifestream": "^0.5.0",
     "through2": "^2.0.3"
-  }
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^3.5.0"
+  },
+  "engines": { "node" : ">=6.0" }
 }

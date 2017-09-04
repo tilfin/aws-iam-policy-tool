@@ -21,5 +21,9 @@ const varSet = {
   ENV: program.env || process.env.ENV || 'ENV',
 };
 
+const opts = {
+  overwrite: program.overwrite
+};
+
 const main = require('../lib/import-policy');
-main(dir, varSet);
+main(dir, varSet, opts);

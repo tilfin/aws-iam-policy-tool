@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require('fs');
 const program = require('commander');
 
 program
@@ -17,5 +18,5 @@ const pattern = new RegExp(args[1]);
 
 const main = require('../lib/export-role');
 
-fs.mkdirSync(outdir);
+try { fs.mkdirSync(outdir); } catch(err) {}
 main(outdir, pattern);

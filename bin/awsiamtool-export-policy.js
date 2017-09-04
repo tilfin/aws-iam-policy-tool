@@ -18,5 +18,5 @@ const pattern = new RegExp(args[1]);
 
 const main = require('../lib/export-policy');
 
-fs.mkdirSync(outdir);
+try { fs.mkdirSync(outdir); } catch(err) {}
 main(outdir, pattern);

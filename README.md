@@ -1,5 +1,7 @@
 # AWS IAM tool
 
+AWS IAM role/policy management command line tool
+
 * Required Node.js 6.x or later
 
 ## Install
