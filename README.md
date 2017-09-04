@@ -1,11 +1,20 @@
 # AWS IAM tool
 
+* Required Node.js 6.x or later
+
+## Install
+
+```
+$ git clone git@github.com:tilfin/aws-iam-tool.git
+$ npm install -g ./aws-iam-tool
+```
+
 ## Usage
 
 ```
-$ aws-iam-tool --help
+$ awsiamtool --help
 
-  Usage: aws-iam-tool [options] [command]
+  Usage: awsiamtool [options] [command]
 
   AWS IAM export/import policy/role management tool
 
@@ -18,10 +27,42 @@ $ aws-iam-tool --help
 
   Commands:
 
-    export-policy <dir> <matcher>  export polies to target directory
-    export-role <dir> <matcher>    export roles to target directory
+    export-policy <dir> <pattern>  export polies to target directory
+    export-role <dir> <pattern>    export roles to target directory
     import-policy <dir>            import policies from target directory
     import-role <dir>              import policies from target directory
-    delete-policy <matcher>        delete policies specified regular expression matches
+    delete-policy <pattern>        delete policies specified regular expression matches
     help [cmd]                     display help for [cmd]
+```
+
+## Examples
+
+### Export roles
+
+```
+$ awsiamtool export-role /tmp/myroles
+```
+
+### Export policies
+
+```
+$ awsiamtool export-policy /tmp/mypolicies
+```
+
+### Import roles
+
+```
+$ awsiamtool import-role iam/roles
+```
+
+### Import policies
+
+```
+$ awsiamtool import-policy iam/policies
+```
+
+### Delete policies
+
+```
+$ awsiamtool delete-policy "^myservice\-"
 ```

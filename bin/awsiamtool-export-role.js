@@ -13,7 +13,9 @@ if (args.length !== 2) {
 }
 
 const outdir = args[0];
-const pattern = args[1];
+const pattern = new RegExp(args[1]);
 
 const main = require('../lib/export-role');
+
+fs.mkdirSync(outdir);
 main(outdir, pattern);

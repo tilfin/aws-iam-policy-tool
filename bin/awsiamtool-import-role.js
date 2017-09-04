@@ -20,7 +20,5 @@ const varSet = {
   ENV: program.env || process.env.ENV || 'ENV',
 };
 
-console.info(dir, varSet);
-
 const main = require('../lib/import-role');
 main(dir, varSet);
