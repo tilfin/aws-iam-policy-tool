@@ -33,6 +33,7 @@ $ awsiamtool --help
     export-role <dir> <pattern>    export roles to target directory
     import-policy <dir>            import policies from target directory
     import-role <dir>              import policies from target directory
+    validate-role <dir>            validate roles with target directory
     delete-policy <pattern>        delete policies specified regular expression matches
     help [cmd]                     display help for [cmd]
 ```
@@ -61,6 +62,12 @@ $ awsiamtool import-role iam/roles
 
 ```
 $ awsiamtool import-policy iam/policies
+```
+
+### Validate policies
+
+```
+$ awsiamtool validate-policy iam/policies
 ```
 
 ### Delete policies

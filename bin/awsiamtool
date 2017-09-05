@@ -10,5 +10,7 @@ program
   .command('export-role <dir> <matcher>', 'export roles to target directory')
   .command('import-policy <dir>', 'import policies from target directory')
   .command('import-role <dir>', 'import policies from target directory')
+  .command('validate-policy <dir>', 'validate policies with target directory')
+  .command('validate-role <dir>', 'validate roles with target directory')
   .command('delete-policy <matcher>', 'delete policies specified regular expression matches')
   .parse(process.argv);
