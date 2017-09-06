@@ -25,7 +25,7 @@ const opts = {
   overwrite: program.overwrite
 };
 
-const main = require('../lib/validate-policy');
+const main = require('../lib/validate_policy');
 main(dir, varSet, opts)
 .then(success => {
   if (!success) {

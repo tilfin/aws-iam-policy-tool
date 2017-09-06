@@ -16,7 +16,7 @@ if (args.length !== 2) {
 const outdir = args[0];
 const pattern = new RegExp(args[1]);
 
-const main = require('../lib/export-policy');
+const main = require('../lib/export_policy');
 
 try { fs.mkdirSync(outdir); } catch(err) {}
 main(outdir, pattern);

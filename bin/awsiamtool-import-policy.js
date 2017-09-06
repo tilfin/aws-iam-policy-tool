@@ -25,5 +25,5 @@ const opts = {
   overwrite: program.overwrite
 };
 
-const main = require('../lib/import-policy');
+const main = require('../lib/import_policy');
 main(dir, varSet, opts);

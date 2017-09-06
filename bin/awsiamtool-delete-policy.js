@@ -14,5 +14,5 @@ if (args.length !== 1) {
 
 const pattern = new RegExp(args[0]);
 
-const main = require('../lib/delete-policy');
+const main = require('../lib/delete_policy');
 main(pattern);

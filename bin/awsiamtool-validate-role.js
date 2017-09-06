@@ -10,7 +10,7 @@ program
 
 const args = program.args;
 if (!args.length) {
-  console.error('role directory required');
+  console.error('policy directory required');
   process.exit(1);
 }
 
@@ -20,5 +20,15 @@ const varSet = {
   ENV: program.env || process.env.ENV || 'ENV',
 };
 
-const main = require('../lib/import_role');
-main(dir, varSet);
+const main = require('../lib/validate_role');
+main(dir, varSet)
+.then(success => {
+  if (!success) {
+    console.error('Detected invalid role');
+    process.exitCode = 1;
+  }
+})
+.catch(err => {
+  console.error(err.stack)
+  process.exitCode = 2;
+});
