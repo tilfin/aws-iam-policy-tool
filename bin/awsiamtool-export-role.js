@@ -10,13 +10,13 @@ program
   .parse(process.argv);
 
 const args = program.args;
-if (args.length !== 2) {
-  console.error('output directory and name pattern required');
+if (args.length < 1) {
+  console.error('output directory required');
   process.exit(1);
 }
 
 const outdir = args[0];
-const pattern = new RegExp(args[1]);
+const pattern = args.length > 1 ? new RegExp(args[1]) : null;
 
 const main = require('../lib/export_role');
 
