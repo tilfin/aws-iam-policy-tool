@@ -1,0 +1,28 @@
+{
+    "Role": {
+        "RoleName": "bar-lambda-converter-ENV",
+        "Path": "/",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    },
+    "AttachedPolicies": [
+        {
+            "PolicyName": "bar-kinesis-stream-to-lambda-ENV",
+            "PolicyArn": "arn:aws:iam::ACCOUNT_ID:policy/bar-kinesis-stream-to-lambda-ENV"
+        },
+        {
+            "PolicyName": "bar-logs-lambda-ENV",
+            "PolicyArn": "arn:aws:iam::ACCOUNT_ID:policy/bar-logs-lambda-ENV"
+        }
+    ]
+}

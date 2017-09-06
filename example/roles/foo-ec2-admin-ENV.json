@@ -1,0 +1,28 @@
+{
+    "Role": {
+        "RoleName": "foo-ec2-admin-ENV",
+        "Path": "/",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "ec2.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    },
+    "AttachedPolicies": [
+        {
+            "PolicyName": "foo-s3-storage-ENV",
+            "PolicyArn": "arn:aws:iam::ACCOUNT_ID:policy/foo-s3-storage-ENV"
+        },
+        {
+            "PolicyName": "foo-s3-logs-ENV",
+            "PolicyArn": "arn:aws:iam::ACCOUNT_ID:policy/foo-s3-logs-ENV"
+        }
+    ]
+}
