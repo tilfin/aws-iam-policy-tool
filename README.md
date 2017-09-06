@@ -1,10 +1,16 @@
 # AWS IAM tool
 
-AWS IAM role/policy management command line tool
+AWS IAM role/policy command line tool is useful to manage role and policy definitions as JSON files.
 
-* Required Node.js 6.x or later
+* Support a **Role** with only **Managed Policies**, without **Inline policies**
+* Support the feature to substitute variables (ex `ACCOUNT_ID`, `ENV`) contained within definitions by given values
+* Each JSON filename must be based on the name of *Role* or *Policy*.
+
+See an [example](example) of *Role* and *Policy* definitions.
 
 ## Install
+
+* Require Node.js 6.x or later
 
 ```
 $ git clone git@github.com:tilfin/aws-iam-tool.git
@@ -38,12 +44,27 @@ $ awsiamtool --help
     help [cmd]                     display help for [cmd]
 ```
 
-## Examples
+### Common command options
+
+```
+  Options:
+
+    -j, --json                         output result as JSON text
+    -p, --plain                        output result as plain text
+    -h, --help                         output usage information
+```
+
+### Set substitution variables
+
+* `-i, --account-id [aws account id]`  set variable ACCOUNT_ID
+* `-e, --env [environment]`            set variable ENV
+
+The above variables are substituted by given values in the name of *role* file, the name of *policy* file and all values of their JSON.
 
 ### Export roles
 
 ```
-$ awsiamtool export-role /tmp/myroles
+$ awsiamtool export-role /tmp/current_roles
 ```
 
 ![export-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_export-role.png)
@@ -51,23 +72,26 @@ $ awsiamtool export-role /tmp/myroles
 ### Export policies
 
 ```
-$ awsiamtool export-policy /tmp/mypolicies
+$ awsiamtool export-policy /tmp/current_policies
 ```
 
 ![export-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_export-policy.png)
 
 ### Import roles
 
+
 ```
-$ awsiamtool import-role -i <AWS Account ID> -e staging iam/roles
+$ awsiamtool import-role -i <AWS Account ID> -e <Environment> exmaple/roles
 ```
 
 ![import-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_import-role.png)
 
 ### Import policies
 
+* `-f, --overwrite` overwrite new content of policies. If it isn't specified, current policies are kept and new policy that does not exist is created.
+
 ```
-$ awsiamtool import-policy -i <AWS Account ID> -e staging iam/policies
+$ awsiamtool import-policy -i <AWS Account ID> -e <Environment> [--overwrite] exmaple/policies
 ```
 
 ![import-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_import-policy.png)
@@ -75,7 +99,7 @@ $ awsiamtool import-policy -i <AWS Account ID> -e staging iam/policies
 ### Validate roles
 
 ```
-$ awsiamtool validate-role -i <AWS Account ID> -e staging iam/policies
+$ awsiamtool validate-role -i <AWS Account ID> -e <Environment> exmaple/roles
 ```
 
 ![validate-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_validate-role.png)
@@ -83,7 +107,7 @@ $ awsiamtool validate-role -i <AWS Account ID> -e staging iam/policies
 ### Validate policies
 
 ```
-$ awsiamtool validate-policy -i <AWS Account ID> -e staging iam/policies
+$ awsiamtool validate-policy -i <AWS Account ID> -e <Environment> exmaple/policies
 ```
 
 ![validate-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_validate-policy.png)
