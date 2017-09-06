@@ -5,6 +5,8 @@ const program = require('commander');
 
 program
   .arguments('<outdir> <pattern>')
+  .option('-j, --json', 'output result as JSON text')
+  .option('-p, --plain', 'output result as plain text')
   .parse(process.argv);
 
 const args = program.args;
@@ -19,4 +21,4 @@ const pattern = new RegExp(args[1]);
 const main = require('../lib/export_role');
 
 try { fs.mkdirSync(outdir); } catch(err) {}
-main(outdir, pattern);
+main(outdir, pattern, { json: program.json, plain: program.plain });

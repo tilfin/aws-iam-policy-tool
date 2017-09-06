@@ -6,6 +6,8 @@ program
   .arguments('<dir>')
   .option('-i, --account-id [aws account id]', 'set variable ACCOUNT_ID')
   .option('-e, --env [environment]', 'set variable ENV')
+  .option('-j, --json', 'output result as JSON text')
+  .option('-p, --plain', 'output result as plain text')
   .parse(process.argv);
 
 const args = program.args;
@@ -20,5 +22,10 @@ const varSet = {
   ENV: program.env || process.env.ENV || 'ENV',
 };
 
+const opts = {
+  json: program.json,
+  plain: program.plain
+};
+
 const main = require('../lib/import_role');
-main(dir, varSet);
+main(dir, varSet, opts);

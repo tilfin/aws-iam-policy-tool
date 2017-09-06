@@ -6,7 +6,8 @@ program
   .arguments('<dir>')
   .option('-i, --account-id [aws account id]', 'set variable ACCOUNT_ID')
   .option('-e, --env [environment]', 'set variable ENV')
-  .option('-f, --overwrite', 'overwrite an role if it exists')
+  .option('-j, --json', 'output result as JSON text')
+  .option('-p, --plain', 'output result as plain text')
   .parse(process.argv);
 
 const args = program.args;
@@ -22,7 +23,8 @@ const varSet = {
 };
 
 const opts = {
-  overwrite: program.overwrite
+  json: program.json,
+  plain: program.plain
 };
 
 const main = require('../lib/validate_policy');

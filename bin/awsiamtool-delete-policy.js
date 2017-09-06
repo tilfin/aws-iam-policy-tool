@@ -4,6 +4,8 @@ const program = require('commander');
 
 program
   .arguments('<pattern>')
+  .option('-j, --json', 'output result as JSON text')
+  .option('-p, --plain', 'output result as plain text')
   .parse(process.argv);
 
 const args = program.args;
@@ -15,4 +17,4 @@ if (args.length !== 1) {
 const pattern = new RegExp(args[0]);
 
 const main = require('../lib/delete_policy');
-main(pattern);
+main(pattern, { json: program.json, plain: program.plain });
