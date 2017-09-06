@@ -31,7 +31,7 @@ const main = require('../lib/validate_role');
 main(dir, varSet, opts)
 .then(success => {
   if (!success) {
-    console.error('Detected invalid role');
+    console.error('Detected problem(s)');
     process.exitCode = 1;
   }
 })

@@ -46,29 +46,47 @@ $ awsiamtool --help
 $ awsiamtool export-role /tmp/myroles
 ```
 
+![export-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_export-role.png)
+
 ### Export policies
 
 ```
 $ awsiamtool export-policy /tmp/mypolicies
 ```
 
+![export-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_export-policy.png)
+
 ### Import roles
 
 ```
-$ awsiamtool import-role iam/roles
+$ awsiamtool import-role -i <AWS Account ID> -e staging iam/roles
 ```
+
+![import-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_import-role.png)
 
 ### Import policies
 
 ```
-$ awsiamtool import-policy iam/policies
+$ awsiamtool import-policy -i <AWS Account ID> -e staging iam/policies
 ```
+
+![import-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_import-policy.png)
+
+### Validate roles
+
+```
+$ awsiamtool validate-role -i <AWS Account ID> -e staging iam/policies
+```
+
+![validate-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_validate-role.png)
 
 ### Validate policies
 
 ```
-$ awsiamtool validate-policy iam/policies
+$ awsiamtool validate-policy -i <AWS Account ID> -e staging iam/policies
 ```
+
+![validate-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_validate-policy.png)
 
 ### Delete policies
 

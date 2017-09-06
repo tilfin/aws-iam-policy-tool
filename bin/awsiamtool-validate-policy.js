@@ -31,7 +31,7 @@ const main = require('../lib/validate_policy');
 main(dir, varSet, opts)
 .then(success => {
   if (!success) {
-    console.error('Detected invalid policy');
+    console.error('Detected problem(s)');
     process.exitCode = 1;
   }
 })
