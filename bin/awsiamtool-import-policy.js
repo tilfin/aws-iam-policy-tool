@@ -26,7 +26,7 @@ const varSet = {
 const opts = {
   overwrite: program.overwrite,
   json: program.json,
-  plain: program.plain
+  plain: program.plain || program.json,
 };
 
 const main = require('../lib/import_policy');

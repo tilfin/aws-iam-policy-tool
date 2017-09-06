@@ -24,7 +24,7 @@ const varSet = {
 
 const opts = {
   json: program.json,
-  plain: program.plain
+  plain: program.plain || program.json,
 };
 
 const main = require('../lib/validate_role');

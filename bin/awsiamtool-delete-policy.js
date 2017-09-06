@@ -16,5 +16,10 @@ if (args.length !== 1) {
 
 const pattern = new RegExp(args[0]);
 
+const opts = {
+  json: program.json,
+  plain: program.plain || program.json,
+};
+
 const main = require('../lib/delete_policy');
-main(pattern, { json: program.json, plain: program.plain });
+main(pattern, opts);
