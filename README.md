@@ -6,6 +6,68 @@ AWS IAM role/policy command line tool is useful to manage role and policy defini
 * Support the feature to substitute variables (ex `ACCOUNT_ID`, `ENV`) contained within definitions by given values
 * Each JSON filename must be based on the name of *Role* or *Policy*.
 
+## Definition files as JSON format
+
+### Role
+
+* `Role`
+    * `RoleName`
+    * `Path`
+    * `AssumeRolePolicyDocument` manifests the trust relationship.
+* `AttachedPolicies` contains attached managed policies.
+
+#### yourapp-ec2-api-ENV.json
+
+```json
+{
+    "Role": {
+        "RoleName": "yourapp-ec2-api-ENV",
+        "Path": "/",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "ec2.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    },
+    "AttachedPolicies": [
+        {
+            "PolicyName": "yourapp-s3-storage-ENV",
+            "PolicyArn": "arn:aws:iam::ACCOUNT_ID:policy/yourapp-s3-storage-ENV"
+        }
+    ]
+}
+```
+
+### Policy
+
+A filename minus the extension (.json) decides the policy name.
+
+#### yourapp-s3-storage-ENV.json
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::yourapp-storage-ENV/*"
+        }
+    ]
+}
+```
+
 See an [example](example) of *Role* and *Policy* definitions.
 
 ## Install
