@@ -14,6 +14,7 @@ AWS IAM role/policy command line tool is useful to manage role and policy defini
     * `RoleName`
     * `Path`
     * `AssumeRolePolicyDocument` manifests the trust relationship.
+    * `Description` (optional)
 * `AttachedPolicies` contains attached managed policies.
 
 #### yourapp-ec2-api-ENV.json
