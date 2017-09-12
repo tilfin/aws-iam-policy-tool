@@ -1,12 +1,16 @@
-# AWS IAM tool
+# AWS IAM Policy tool
 
-AWS IAM role/policy command line tool is useful to manage role and policy definitions as JSON files.
+A cli tool to manage AWS IAM roles and the policies is useful to operate their definitions as JSON files.
 
-* Support a **Role** with only **Managed Policies**, without **Inline policies**
-* Support the feature to substitute variables (ex `ACCOUNT_ID`, `ENV`) contained within definitions by given values
-* Each JSON filename must be based on the name of *Role* or *Policy*.
+* Supports exporting roles/policies your AWS Account has already registered, importing new roles/policies, and validating whether them on AWS to equal the definitions at local.
+* Supports a **Role** with only **Managed Policies**, without **Inline policies** purposely
+* Supports the feature to substitute variables (ex `ACCOUNT_ID`, `ENV`) contained within definitions by given values
+* This module could also be used as a library.
 
-## Definition files as JSON format
+## Role/Policy definition file
+
+A definition is saved as JSON file that is like to be displayed by the editor on AWS Management Console.
+Each JSON filename must be based on the name of *Role* or *Policy*.
 
 ### Role
 
@@ -76,8 +80,7 @@ See an [example](example) of *Role* and *Policy* definitions.
 * Require Node.js 6.x or later
 
 ```
-$ git clone git@github.com:tilfin/aws-iam-tool.git
-$ npm install -g ./aws-iam-tool
+$ npm install -g aws-iam-policy-tool
 ```
 
 ## Usage
@@ -130,7 +133,7 @@ The above variables are substituted by given values in the name of *role* file, 
 $ awsiamtool export-role /tmp/current_roles
 ```
 
-![export-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_export-role.png)
+![export-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-policy-tool/images/ss_export-role.png)
 
 ### Export policies
 
@@ -138,7 +141,7 @@ $ awsiamtool export-role /tmp/current_roles
 $ awsiamtool export-policy /tmp/current_policies
 ```
 
-![export-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_export-policy.png)
+![export-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-policy-tool/images/ss_export-policy.png)
 
 ### Import roles
 
@@ -147,7 +150,7 @@ $ awsiamtool export-policy /tmp/current_policies
 $ awsiamtool import-role -i <AWS Account ID> -e <Environment> exmaple/roles
 ```
 
-![import-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_import-role.png)
+![import-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-policy-tool/images/ss_import-role.png)
 
 ### Import policies
 
@@ -157,7 +160,7 @@ $ awsiamtool import-role -i <AWS Account ID> -e <Environment> exmaple/roles
 $ awsiamtool import-policy -i <AWS Account ID> -e <Environment> [--overwrite] exmaple/policies
 ```
 
-![import-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_import-policy.png)
+![import-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-policy-tool/images/ss_import-policy.png)
 
 ### Validate roles
 
@@ -165,7 +168,7 @@ $ awsiamtool import-policy -i <AWS Account ID> -e <Environment> [--overwrite] ex
 $ awsiamtool validate-role -i <AWS Account ID> -e <Environment> exmaple/roles
 ```
 
-![validate-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_validate-role.png)
+![validate-role screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-policy-tool/images/ss_validate-role.png)
 
 ### Validate policies
 
@@ -173,10 +176,38 @@ $ awsiamtool validate-role -i <AWS Account ID> -e <Environment> exmaple/roles
 $ awsiamtool validate-policy -i <AWS Account ID> -e <Environment> exmaple/policies
 ```
 
-![validate-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-tool/images/ss_validate-policy.png)
+![validate-policy screen shot](https://raw.githubusercontent.com/wiki/tilfin/aws-iam-policy-tool/images/ss_validate-policy.png)
 
 ### Delete policies
 
 ```
 $ awsiamtool delete-policy "^myservice\-"
+```
+
+## Use as a library
+
+The name of variable to substitute within the definitions must be to match the regular expression `/^[A-Z][A-Z0-9_]+$/`.
+It can also be like Shell variables (ex. `$FOO`, `${BAR_NAME}`).
+
+```js
+const awsIamPolicyLib = require('aws-iam-policy-tool');
+
+const opts = {
+  json: true,
+  overwrite: true
+};
+
+const varSets = {
+  ACCOUNT_ID: '000011112222',
+  ENV: 'stg',
+  COMMON_ACCOUNT_ID: '333344445555',
+  COMPANY_NAME: 'awesome'
+};
+
+awsIamPolicyLib.importPolicy('./policies', varSets, opts);
+.then(() => {
+  return awsIamPolicyLib.importRole('./roles', varSets, opts);  
+})
+.then(() => { console.info('Importing done') })
+.catch(err => { console.error(err) });
 ```

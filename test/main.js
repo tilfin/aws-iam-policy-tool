@@ -1,14 +1,14 @@
 const assert = require('chai').assert;
 
-const awsIamTool = require('../');
+const awsIamPolicy = require('../');
 
-let exportPolicy = awsIamTool.exportPolicy;
-let exportRole = awsIamTool.exportRole;
-let importPolicy = awsIamTool.importPolicy;
-let importRole = awsIamTool.importRole;
-let validatePolicy = awsIamTool.validatePolicy;
-let validateRole = awsIamTool.validateRole;
-let deletePolicy = awsIamTool.deletePolicy;
+let exportPolicy = awsIamPolicy.exportPolicy;
+let exportRole = awsIamPolicy.exportRole;
+let importPolicy = awsIamPolicy.importPolicy;
+let importRole = awsIamPolicy.importRole;
+let validatePolicy = awsIamPolicy.validatePolicy;
+let validateRole = awsIamPolicy.validateRole;
+let deletePolicy = awsIamPolicy.deletePolicy;
 
 describe('require each module', () => {
   it('loads valid', () => {
