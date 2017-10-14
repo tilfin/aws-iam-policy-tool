@@ -1,5 +1,7 @@
 # AWS IAM Policy tool
 
+[![NPM Version][npm-image]][npm-url]
+
 A cli tool to manage AWS IAM roles and the policies is useful to operate their definitions as JSON files.
 
 * Supports exporting roles/policies your AWS Account has already registered, importing new roles/policies, and validating whether them on AWS to equal the definitions at local.
@@ -211,3 +213,10 @@ awsIamPolicyLib.importPolicy('./policies', varSets, opts);
 .then(() => { console.info('Importing done') })
 .catch(err => { console.error(err) });
 ```
+
+## License
+
+[MIT](LICENSE)
+
+[npm-image]: https://img.shields.io/npm/v/aws-iam-policy-tool.svg
+[npm-url]: https://npmjs.org/package/aws-iam-policy-tool
