@@ -103,7 +103,7 @@ $ awsiamtool --help
 
   Commands:
 
-    export-policy <dir> <pattern>  export polies to target directory
+    export-policy <dir> <pattern>  export policies to target directory
     export-role <dir> <pattern>    export roles to target directory
     import-policy <dir>            import policies from target directory
     import-role <dir>              import policies from target directory
