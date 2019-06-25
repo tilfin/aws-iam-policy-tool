@@ -16,11 +16,11 @@
   "author": "Toshimitsu Takahashi",
   "license": "MIT",
   "dependencies": {
+    "@tilfin/stream-utils": "^0.7.0",
     "aws-sdk": "^2.110.0",
     "commander": "^2.11.0",
     "json-diff": "^0.5.1",
-    "promised-lifestream": "^0.6.0",
-    "through2": "^2.0.3"
+    "promised-lifestream": "^0.6.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
