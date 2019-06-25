@@ -16,6 +16,7 @@
   "author": "Toshimitsu Takahashi",
   "license": "MIT",
   "dependencies": {
+    "@tilfin/stream-utils": "^0.6.0",
     "aws-sdk": "^2.110.0",
     "commander": "^2.11.0",
     "json-diff": "^0.5.1",
