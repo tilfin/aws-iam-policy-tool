@@ -79,7 +79,7 @@ See an [example](example) of *Role* and *Policy* definitions.
 
 ## Install
 
-* Require Node.js 6.x or later
+* Require Node.js 8.10 or later
 
 ```
 $ npm install -g aws-iam-policy-tool

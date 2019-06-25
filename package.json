@@ -1,6 +1,6 @@
 {
   "name": "aws-iam-policy-tool",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "AWS IAM role/policy management cli tool",
   "main": "index.js",
   "bin": {
