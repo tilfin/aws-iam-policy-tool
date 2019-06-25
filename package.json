@@ -1,6 +1,6 @@
 {
   "name": "aws-iam-policy-tool",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "AWS IAM role/policy management cli tool",
   "main": "index.js",
   "bin": {
@@ -17,16 +17,16 @@
   "license": "MIT",
   "dependencies": {
     "@tilfin/stream-utils": "^0.7.0",
-    "aws-sdk": "^2.110.0",
-    "commander": "^2.11.0",
-    "json-diff": "^0.5.1",
-    "promised-lifestream": "^0.6.0"
+    "aws-sdk": "^2.481.0",
+    "commander": "^2.20.0",
+    "json-diff": "^0.5.4",
+    "promised-lifestream": "^0.7.0"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "mocha": "^3.5.0"
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4"
   },
   "engines": {
-    "node": ">=6.0"
+    "node": ">=8.10"
   }
 }
