@@ -25,7 +25,7 @@ async function writePolicyFile(parentDir: string, name: string, doc: string): Pr
 }
 
 
-export default async function(outDir: string, nameMatcher: any, opts: any = {}) {
+export async function main(outDir: string, nameMatcher: any, opts: any = {}) {
   try {
     return await promisedLife([
       new ListPolicyStream({

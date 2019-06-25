@@ -11,7 +11,7 @@ import { readPolicyFile, MyPolicyDoc } from './aws/policy'
 import { PolicyValidator } from './logic/policy_validator'
 
 
-export default async function(inDir: string, varSet: any, opts: any = {}) {
+export async function main(inDir: string, varSet: any, opts: any = {}) {
   const validator = new PolicyValidator(opts)
 
   const jsonFiles = await listJsonFiles(inDir)

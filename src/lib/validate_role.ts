@@ -2,7 +2,7 @@
  * validate IAM roles from JSON files
  */
 
- import { readRoleFile } from "./aws/role";
+import { readRoleFile } from "./aws/role"
 
 const promisedLife = require('promised-lifestream');
 const FileUtil = require('./utils/file')
@@ -12,7 +12,7 @@ const { createWriter } = require('./utils/result_writer');
 const RoleValidator = require('./logic/role_validator');
 
 
-export default async function(inDir: string, varSet: any, opts: any = {}) {
+export async function main(inDir: string, varSet: any, opts: any = {}) {
   const validator = new RoleValidator()
 
   const jsonFiles = await FileUtil.listJsonFiles(inDir)

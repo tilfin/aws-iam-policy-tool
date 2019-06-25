@@ -10,7 +10,7 @@ import { listJsonFiles } from './utils/file'
 import { RoleRegisterer } from './logic/role_registerer'
 
 
-export default async function(inDir: string, varSet: any, opts: any = {}) {
+export async function main(inDir: string, varSet: any, opts: any = {}) {
   const registerer = new RoleRegisterer(opts)
 
   try {

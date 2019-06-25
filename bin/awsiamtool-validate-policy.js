@@ -27,7 +27,7 @@ const opts = {
   plain: program.plain || program.json,
 };
 
-const main = require('../lib/validate_policy');
+const { main } = require('../lib/validate_policy');
 main(dir, varSet, opts)
 .then(success => {
   if (!success) {

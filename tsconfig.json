@@ -8,7 +8,7 @@
     "declarationMap": true,
     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-    "outDir": "./build",                        /* Redirect output structure to the directory. */
+    "outDir": "./lib",                        /* Redirect output structure to the directory. */
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                     /* Enable project compilation */
     // "incremental": true,                   /* Enable incremental compilation */
@@ -29,7 +29,7 @@
     "noImplicitThis": false,
     "alwaysStrict": true,
     /* Additional Checks */
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     // "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
     // "noFallthroughCasesInSwitch": true,    /* Report errors for fallthrough cases in switch statement. */
 

@@ -49,7 +49,7 @@ async function writeRoleFile(parentDir: string, item: ListRolePoliciesResult) {
 }
 
 
-export default async function(outDir: string, nameMatcher: any, opts = {}) {
+export async function main(outDir: string, nameMatcher: any, opts = {}) {
   return promisedLife([
     new ListRoleStream(),
     filterStream((role: IAM.Role) => {

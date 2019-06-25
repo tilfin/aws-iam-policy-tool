@@ -29,5 +29,5 @@ const opts = {
   plain: program.plain || program.json,
 };
 
-const main = require('../lib/import_policy');
+const { main } = require('../lib/import_policy');
 main(dir, varSet, opts);

@@ -8,7 +8,7 @@ import { IAM } from 'aws-sdk'
 import { iam } from './aws/iam'
 import { ListPolicyStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
-import { OK, NG, Result } from './utils/result'
+import { OK, NG } from './utils/result'
 const { createWriter } = require('./utils/result_writer')
 
 
@@ -29,7 +29,7 @@ async function deletePolicy(policy: IAM.Policy) {
 }
 
 
-export default async function(nameMatcher: any, opts = {}) {
+export async function main(nameMatcher: any, opts = {}) {
   try {
     const policies = await promisedLife([
       new ListPolicyStream({
