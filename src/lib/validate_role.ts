@@ -1,26 +1,25 @@
 /**
  * validate IAM roles from JSON files
  */
-
-import { readRoleFile } from "./aws/role"
-
-const promisedLife = require('promised-lifestream');
-const FileUtil = require('./utils/file')
+const promisedLife = require('promised-lifestream')
 const StreamUtils = require('@tilfin/stream-utils')
-const { promisedStream } = require('./utils/stream')
-const { createWriter } = require('./utils/result_writer');
-const RoleValidator = require('./logic/role_validator');
+
+import { promisedStream } from './utils/stream'
+import { readRoleFile, LocalRoleFile } from "./aws/role"
+import { createWriter } from './utils/result_writer'
+import { RoleValidator } from './logic/role_validator'
+import { listJsonFiles } from './utils/file'
 
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {
   const validator = new RoleValidator()
 
-  const jsonFiles = await FileUtil.listJsonFiles(inDir)
+  const jsonFiles = await listJsonFiles(inDir)
 
   await promisedLife([
     StreamUtils.readArray(jsonFiles),
-    promisedStream((file: string) => readRoleFile(file, varSet) ),
-    promisedStream((entry: any) => validator.validate(entry.name, entry.document) ),
+    promisedStream((filePath: string) => readRoleFile(filePath, varSet)),
+    promisedStream((file: LocalRoleFile) => validator.validate(file)),
     createWriter(opts)
   ])
 

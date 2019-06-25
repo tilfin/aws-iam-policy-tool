@@ -1,8 +1,8 @@
 import path from 'path'
 import { iam } from './iam'
-import { IAM } from 'aws-sdk';
-const FileUtil = require('../utils/file');
-const VarsetUtil = require('../utils/varset');
+import { IAM } from 'aws-sdk'
+import { readFile } from '../utils/file'
+import { parseJSON } from '../utils/varset'
 
 export interface MyStatement {
   Effect: string
@@ -28,14 +28,9 @@ export type MyRoleDocument = {
   AttachedPolicies: IAM.AttachedPolicy[]
 }
 
-export type MyRoleDoc = {
+export type LocalRoleFile = {
   name: string
   document: MyRoleDocument
-}
-
-export type RoleData = {
-  name: string
-  document: any
 }
 
 export async function createRole(role: any): Promise<IAM.Role> {
@@ -79,14 +74,14 @@ export function isEc2Role(role: MyRole) {
   return role.AssumeRolePolicyDocument.Statement[0]!.Principal.Service === "ec2.amazonaws.com";
 }
 
-export async function readRoleFile(filePath: string, varSet: any): Promise<MyRoleDoc> {
+export async function readRoleFile(filePath: string, varSet: any): Promise<LocalRoleFile> {
   let name: string = ''
   try {
     name = path.basename(filePath, '.json')
-    const text = await FileUtil.readFile(filePath)
+    const text = await readFile(filePath)
     return {
       name,
-      document: VarsetUtil.parseJSON(text, varSet) as MyRoleDocument,
+      document: parseJSON(text, varSet) as MyRoleDocument,
     }
   } catch(err) {
     console.error(`Failed to read ${name}`)

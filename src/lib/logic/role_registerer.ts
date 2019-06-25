@@ -1,9 +1,7 @@
 'use strict'
 
-import { MyRoleDoc, MyRoleDocument, MyRole } from "../aws/role";
+import { LocalRoleFile, MyRoleDocument, MyRole, isEc2Role, createRole } from "../aws/role";
 import { iam } from '../aws/iam'
-const iamRole = require('../aws/role')
-const attach = require('../aws/attach')
 import { Result, OK, NG, Skip } from '../utils/result'
 import { IAM } from "aws-sdk";
 import { RolePolicyPair, diffAttachedPolicies } from "../aws/attach";
@@ -16,7 +14,7 @@ export class RoleRegisterer {
     this._overwrite = opts['overwrite'] || false
   }
 
-  async register({ name, document }: MyRoleDoc) {
+  async register({ name, document }: LocalRoleFile) {
     try {
       const results: Result[] = []
       await this._createRoleOrWithInstanceProfile(document, results)
@@ -41,7 +39,7 @@ export class RoleRegisterer {
   async _createRoleOrWithInstanceProfile(document: MyRoleDocument, results: Result[]) {
     const roleName = document.Role.RoleName
     const createdRole = await this._createRole(document, results)
-    if (createdRole && iamRole.isEc2Role(document.Role)) {
+    if (createdRole && isEc2Role(document.Role)) {
       const result = await this._createInstanceProfile(roleName, results)
       if (result !== null) {
         await this._addRoleToInstanceProfile(roleName, roleName, results)
@@ -59,7 +57,7 @@ export class RoleRegisterer {
     }
 
     try {
-      const role = await iamRole.createRole(doc.Role)
+      const role = await createRole(doc.Role)
       results.push(OK('Created Role: %1', roleName))
       return doc.Role
     } catch(err) {

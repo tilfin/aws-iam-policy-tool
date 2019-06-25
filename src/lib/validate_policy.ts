@@ -7,7 +7,7 @@ const StreamUtils = require('@tilfin/stream-utils')
 import { listJsonFiles } from './utils/file'
 import { promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
-import { readPolicyFile, MyPolicyDoc } from './aws/policy'
+import { readPolicyFile, LocalPolicyFile } from './aws/policy'
 import { PolicyValidator } from './logic/policy_validator'
 
 
@@ -18,8 +18,8 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
 
   await promisedLife([
     StreamUtils.readArray(jsonFiles),
-    promisedStream((file: string) => readPolicyFile(file, varSet) ),
-    promisedStream((entry: MyPolicyDoc) => validator.validate(entry) ),
+    promisedStream((filePath: string) => readPolicyFile(filePath, varSet)),
+    promisedStream((file: LocalPolicyFile) => validator.validate(file)),
     createWriter(opts)
   ])
 

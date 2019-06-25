@@ -1,10 +1,7 @@
-'use strict'
-
-import { MyPolicyDoc } from "../aws/policy";
-
 const jsonDiff = require('json-diff')
-const policy = require('../aws/policy')
-const Result = require('../utils/result')
+
+import { LocalPolicyFile, getPolicyArnPrefix, getPolicyDefaultWithVersionInfoByArn } from "../aws/policy"
+import { NG, Result, OK } from "../utils/result"
 
 
 export class PolicyValidator {
@@ -16,26 +13,26 @@ export class PolicyValidator {
     this._invalidCnt = 0
   }
 
-  async validate({ name, document }: MyPolicyDoc) {
+  async validate({ name, document }: LocalPolicyFile): Promise<Result> {
     try {
-      const arnPrefix = await policy.getPolicyArnPrefix()
-      const [currentPolicy, _] = await policy.getPolicyDefaultWithVersionInfoByArn(`${arnPrefix}/${name}`)
+      const arnPrefix = await getPolicyArnPrefix()
+      const { currentPolicy } = await getPolicyDefaultWithVersionInfoByArn(`${arnPrefix}/${name}`)
       if (!currentPolicy) {
         this._invalidCnt++
-        return Result.NG('%1 does not exist.', name)
+        return NG('%1 does not exist.', name)
       }
 
       const currentDoc = JSON.parse(decodeURIComponent(currentPolicy.document))
       const df = jsonDiff.diffString(currentDoc, document, { color: this._color })
       if (df) {
         this._invalidCnt++
-        return Result.NG('%1 is invalid.', name, df)
+        return NG('%1 is invalid.', name, df)
       } else {
-        return Result.OK(name)
+        return OK(name)
       }
     } catch(err) {
       if (err.code === 'NoSuchEntity') {
-        return Result.NG('%1 does not exist.', name)
+        return NG('%1 does not exist.', name)
       }
       throw err
     }

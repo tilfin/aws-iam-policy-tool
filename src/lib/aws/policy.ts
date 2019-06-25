@@ -4,7 +4,7 @@ import { iam } from './iam'
 import { readFile } from '../utils/file'
 import { substitute, parseJSON } from '../utils/varset'
 
-export type Doc = string | object
+export type DocJson = string
 
 export interface MyPolicyStatement {
   Sid: string
@@ -18,14 +18,9 @@ export type MyPolicyDocument = {
   Statement: MyPolicyStatement[]
 }
 
-export type MyPolicyDoc = {
+export type LocalPolicyFile = {
   name: string
   document: MyPolicyDocument
-}
-
-export type PolicyData = {
-  name: string
-  document: any
 }
 
 export interface GetPolicyVersionResult {
@@ -55,9 +50,18 @@ export async function getPolicyDefaultVersion(policy: any): Promise<GetPolicyVer
   }
 }
 
-export async function getPolicyDefaultWithVersionInfoByArn(arn: string): Promise<any> {
+export type GetPolicyDefaultWithVersionInfoByArnResult = {
+  defaultId: string
+  oldestId: string
+  count: number
+  currentPolicy: GetPolicyVersionResult
+}
+
+export async function getPolicyDefaultWithVersionInfoByArn(arn: string): Promise<GetPolicyDefaultWithVersionInfoByArnResult> {
   const versions = await listPolicyVersions(arn)
-  if (versions.length === 0) return {}
+  if (versions.length === 0) {
+    throw new Error('Failed to get policy versions')
+  }
 
   let defaultId: string = ''
   let oldestId: string = ''
@@ -75,9 +79,12 @@ export async function getPolicyDefaultWithVersionInfoByArn(arn: string): Promise
     }
   })
 
-  const result = { defaultId, oldestId, count: versions.length }
-  const policy = { Arn: arn, DefaultVersionId: result.defaultId }
-  return Promise.all([getPolicyDefaultVersion(policy), result])
+  return {
+    defaultId,
+    oldestId,
+    count: versions.length,
+    currentPolicy: await getPolicyDefaultVersion({ Arn: arn, DefaultVersionId: defaultId })
+  }
 }
 
 export async function listPolicyVersions(arn: string): Promise<IAM.PolicyVersion[]> {
@@ -90,19 +97,19 @@ export async function listPolicyVersions(arn: string): Promise<IAM.PolicyVersion
   return data.Versions || []
 }
 
-export async function createPolicy(name: string, doc: Doc, indent: number): Promise<IAM.CreatePolicyResponse> {
+export async function createPolicy({ name, document }: LocalPolicyFile, indent: number): Promise<IAM.CreatePolicyResponse> {
   const params = {
     PolicyName: name,
-    PolicyDocument: convertDocToJSON(doc, indent),
+    PolicyDocument: convertDocToJSON(document, indent),
   }
 
   return iam.createPolicy(params).promise()
 }
 
-export async function createPolicyDefaultVersion(arn: string, doc: Doc, indent: number): Promise<IAM.CreatePolicyVersionResponse> {
+export async function createPolicyDefaultVersion(arn: string, doc: DocJson, indent: number): Promise<IAM.CreatePolicyVersionResponse> {
   const params = {
     PolicyArn: arn,
-    PolicyDocument: convertDocToJSON(doc, indent),
+    PolicyDocument: doc,
     SetAsDefault: true,
   }
 
@@ -138,7 +145,7 @@ export async function getPolicyArnPrefix(): Promise<string> {
   return _policyArnPrefix!
 }
 
-export async function readPolicyFile(filePath: string, varSet: any): Promise<MyPolicyDoc> {
+export async function readPolicyFile(filePath: string, varSet: any): Promise<LocalPolicyFile> {
   let name: string = ''
   try {
     name = path.basename(filePath, '.json')
@@ -153,7 +160,6 @@ export async function readPolicyFile(filePath: string, varSet: any): Promise<MyP
   }
 }
 
-export function convertDocToJSON(doc: Doc, indent: number = 4) {
-  if (typeof doc === 'string') return doc
+export function convertDocToJSON(doc: object, indent: number = 4): DocJson {
   return JSON.stringify(doc, null, indent)
 }

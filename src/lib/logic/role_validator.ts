@@ -1,7 +1,7 @@
-import { MyRole, getAttachedPoliciesByRole, MyRoleDocument } from "../aws/role"
-import { containPolicy } from "../aws/attach"
-
 const jsonDiff = require('json-diff')
+
+import { MyRole, getAttachedPoliciesByRole, LocalRoleFile } from "../aws/role"
+import { containPolicy } from "../aws/attach"
 import { isEc2Role, getInstanceProfile, getRole } from '../aws/role'
 import { OK, NG, Result } from '../utils/result'
 import { IAM } from "aws-sdk"
@@ -27,7 +27,7 @@ export class RoleValidator {
     this._invalidCnt = 0
   }
 
-  async validate(name: string, document: MyRoleDocument): Promise<Result[] | null> {
+  async validate({ name, document }: LocalRoleFile): Promise<Result[] | null> {
     try {
       const role = document.Role
       const roleName = role.RoleName
@@ -50,35 +50,28 @@ export class RoleValidator {
   async _validateRoleOrRoleWithInstanceProfile(definedRole: MyRole) {
     const roleName = definedRole.RoleName;
 
+    let currentRole: IAM.Role
     if (isEc2Role(definedRole)) {
       const profile = await getInstanceProfile(roleName)
       if (!profile) {
         throw new InvalidRoleError('%1 instance profile does not exist.', roleName)
       }
 
-      const currentRole = profile.Roles[0]
+      currentRole = profile.Roles[0]
       currentRole.AssumeRolePolicyDocument = JSON.parse(decodeURIComponent(currentRole.AssumeRolePolicyDocument!))
-      this._deleteIgnoreFields(currentRole)
-
-      const current = JSON.stringify(currentRole)
-      const defined = JSON.stringify(definedRole)
-      const df = jsonDiff.diffString(JSON.parse(current), JSON.parse(defined), { color: this._color })
-      if (df) {
-        throw new InvalidRoleError('%1 is invalid.', roleName, df)
-      }
     } else {
-      const currentRole = await getRole(roleName)
-      if (!currentRole) {
+      const gotRole = await getRole(roleName)
+      if (!gotRole) {
         throw new InvalidRoleError('%1 does not exist.', roleName)
       }
-      this._deleteIgnoreFields(currentRole)
+      currentRole = gotRole!
+    }
 
-      const current = JSON.stringify(currentRole)
-      const defined = JSON.stringify(definedRole)
-      const df = jsonDiff.diffString(JSON.parse(current), JSON.parse(defined), { color: this._color })
-      if (df) {
-        throw new InvalidRoleError('%1 is invalid.', roleName, df)
-      }
+    const current = this._convertForDiff(currentRole)
+    const defined = this._convertForDiff(definedRole)
+    const df = jsonDiff.diffString(current, defined, { color: this._color })
+    if (df) {
+      throw new InvalidRoleError('%1 is invalid.', roleName, df)
     }
   }
 
@@ -104,20 +97,21 @@ export class RoleValidator {
     if (results.length) {
       this._invalidCnt++
       return results
-    } else {
-      return null
     }
+    return null
   }
 
-  isValid() {
+  isValid(): boolean {
     return this._invalidCnt === 0
   }
 
-  _deleteIgnoreFields(role: any) {
-    delete role.Arn
-    delete role.RoleId
-    delete role.CreateDate
-    delete role.MaxSessionDuration
-    delete role.Tags
+  _convertForDiff(role: any) {
+    const data = JSON.parse(JSON.stringify(role))
+    delete data.Arn
+    delete data.RoleId
+    delete data.CreateDate
+    delete data.MaxSessionDuration
+    delete data.Tags
+    return data
   }
 }

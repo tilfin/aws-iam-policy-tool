@@ -1,16 +1,16 @@
 /**
  * export IAM roles to JSON files
  */
+const promisedLife = require('promised-lifestream')
 
 import { iam } from './aws/iam'
-import { IAM } from 'aws-sdk';
-import { MyRoleDocument } from './aws/role';
-const FileUtil = require('./utils/file');
-const promisedLife = require('promised-lifestream');
-const { ListRoleStream } = require('./aws/list_stream')
-const { filterStream, promisedStream } = require('./utils/stream');
-const { createWriter } = require('./utils/result_writer');
-const Result = require('./utils/result')
+import { IAM } from 'aws-sdk'
+import { MyRoleDocument } from './aws/role'
+import { ListRoleStream } from './aws/list_stream'
+import { filterStream, promisedStream } from './utils/stream'
+import { createWriter } from './utils/result_writer'
+import { OK, NG } from './utils/result'
+import { writeJSONFile } from './utils/file'
 
 type ListRolePoliciesResult = {
   Role: IAM.Role
@@ -29,22 +29,22 @@ async function listRolePolicies(role: IAM.Role): Promise<ListRolePoliciesResult>
 
 
 async function writeRoleFile(parentDir: string, item: ListRolePoliciesResult) {
-  const role = item.Role
-  const result: MyRoleDocument = {
-    Role: {
-      RoleName: role.RoleName,
-      Path: role.Path,
-      AssumeRolePolicyDocument: JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument!))
-    },
-    AttachedPolicies: item.AttachedPolicies
+  const role: any = Object.assign({}, item.Role)
+  if (role.AssumeRolePolicyDocument) {
+    role.AssumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument))
   }
 
-  const fileName = `${role.RoleName}.json`;
+  const result: MyRoleDocument = {
+    Role: role,
+    AttachedPolicies: item.AttachedPolicies,
+  }
+
+  const fileName = `${role.RoleName}.json`
   try {
-    await FileUtil.writeJSONFile(parentDir, fileName, result)
-    return Result.OK('Wrote %1', fileName)
+    await writeJSONFile(parentDir, fileName, result)
+    return OK('Wrote %1', fileName)
   } catch(err) {
-    return Result.NG('Failed to write %1', fileName)
+    return NG('Failed to write %1', fileName)
   }
 }
 

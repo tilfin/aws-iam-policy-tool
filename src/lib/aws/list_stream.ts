@@ -1,6 +1,6 @@
 import { Readable } from 'stream'
 import { iam } from './iam'
-import { IAM } from 'aws-sdk';
+import { IAM } from 'aws-sdk'
 
 /**
  * ListStream

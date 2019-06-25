@@ -3,13 +3,14 @@
  */
 const StreamUtils = require('@tilfin/stream-utils')
 const promisedLife = require('promised-lifestream')
-const prompt = require('./utils/prompt')
+
+import prompt from './utils/prompt'
 import { IAM } from 'aws-sdk'
 import { iam } from './aws/iam'
 import { ListPolicyStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
 import { OK, NG } from './utils/result'
-const { createWriter } = require('./utils/result_writer')
+import { createWriter } from './utils/result_writer'
 
 
 async function deletePolicy(policy: IAM.Policy) {

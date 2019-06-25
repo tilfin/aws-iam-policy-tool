@@ -1,11 +1,11 @@
 import {
   createPolicy,
   createPolicyDefaultVersion,
-  deletePolicyVersion, Doc,
+  deletePolicyVersion,
   getPolicyArnPrefix,
   getPolicyDefaultWithVersionInfoByArn,
   convertDocToJSON,
-  MyPolicyDoc
+  LocalPolicyFile
 } from '../aws/policy'
 import { OK, NG, Skip, Result } from '../utils/result'
 
@@ -19,14 +19,15 @@ export class PolicyRegisterer {
     this._overwrite = opts['overwrite'] || false
   }
 
-  async register({ name, document }: MyPolicyDoc): Promise<Result> {
+  async register(policyFileInfo: LocalPolicyFile): Promise<Result> {
+    const { name } = policyFileInfo
     try {
-      await createPolicy(name, document, 4)
+      await createPolicy(policyFileInfo, 4)
       return OK('Created %1', name)
     } catch(err) {
       if (err.code === 'EntityAlreadyExists') {
         if (this._overwrite) {
-          return this._updatePolicyVersion(name, document)
+          return this._updatePolicyVersion(policyFileInfo)
         } else {
           return Skip('%1 already exists.', name)
         }
@@ -37,17 +38,20 @@ export class PolicyRegisterer {
     }
   }
 
-  async _updatePolicyVersion(name: string, doc: Doc): Promise<Result> {
-    const docJSON = convertDocToJSON(doc, 4)
+  async _updatePolicyVersion({ name, document }: LocalPolicyFile): Promise<Result> {
+    const docJSON = convertDocToJSON(document, 4)
 
     const arnPrefix = await getPolicyArnPrefix()
-    const [currentPolicy, versionInfo] = await getPolicyDefaultWithVersionInfoByArn(`${arnPrefix}/${name}`)
+    const {
+      oldestId: deleteVerId,
+      count,
+      currentPolicy,
+    } = await getPolicyDefaultWithVersionInfoByArn(`${arnPrefix}/${name}`)
 
     if (docJSON === decodeURIComponent(currentPolicy.document)) {
       return Skip('%1 not changed', name);
     } else {
-      if (versionInfo.count === 5) {
-        const deleteVerId = versionInfo.oldestId;
+      if (count === 5) {
         await deletePolicyVersion(currentPolicy.arn, deleteVerId)
         await createPolicyDefaultVersion(currentPolicy.arn, docJSON, 4)
         return OK(`Updated %1 and deleted the oldest ${deleteVerId}`, name)
