@@ -1,0 +1,8 @@
+src/
+test/
+docs/
+examples/
+coverage/
+Makefile
+.travis.yml
+tsconfig.json
