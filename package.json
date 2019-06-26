@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "ts-mocha test/**/*.ts"
+    "test": "NODE_ENV=test ts-mocha test/**/*.ts"
   },
   "keywords": [
     "AWS",

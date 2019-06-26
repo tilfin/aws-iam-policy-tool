@@ -1,0 +1,8 @@
+version: '2'
+services:
+  localstack:
+    image: localstack/localstack
+    environment:
+      SERVICES: iam
+    ports:
+      - 4593:4593
