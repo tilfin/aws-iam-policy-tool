@@ -1,8 +1,8 @@
+.*
 src/
 test/
 example/
 coverage/
-.gitignore
-.travis.yml
 docker-compose.yml
 tsconfig.json
+out*

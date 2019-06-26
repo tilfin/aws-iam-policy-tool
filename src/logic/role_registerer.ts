@@ -32,7 +32,7 @@ export class RoleRegisterer {
 
       return results.concat(attachResults)
     } catch(err) {
-      return NG('Failed to create Role: %1 invalid JSON format', name)
+      return NG('Failed to create Role: %1 invalid JSON where %2', [name, err.message])
     }
   }
 
@@ -65,7 +65,7 @@ export class RoleRegisterer {
         results.push(Skip('Role: %1 already exists.', roleName))
         return null
       } else if (err.code === 'MalformedPolicyDocument') {
-        return NG('Failed to create Role: %1 invalid JSON format', roleName)
+        return NG('Failed to create Role: %1 invalid JSON where %2', [roleName, err.message])
       }
       results.push(NG('Failed to create Role: %1', roleName))
       throw err
