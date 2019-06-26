@@ -2,10 +2,10 @@ const del = require('del')
 import path from 'path'
 import { assert } from 'chai'
 
-import { main } from '../src/export_policy'
+import { main } from '../src/export_role'
 
-describe('export_policy', () => {
-  const outDir = path.resolve(__dirname, './out/policies')
+describe('export_role on setup stage', () => {
+  const outDir = path.resolve(__dirname, './out/roles')
 
   before(async () => {
     await del([`${outDir}/*.json`])

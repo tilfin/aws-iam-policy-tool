@@ -3,7 +3,7 @@ import { assert } from 'chai'
 
 import { main } from '../src/import_role'
 
-describe('import_role for terminate', () => {
+describe('import_role on terminate stage', () => {
   const inDir = path.resolve(__dirname, './fixtures/terminate/roles')
 
   context('when roles have no attached policies', () => {

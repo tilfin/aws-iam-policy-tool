@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "ts-mocha test/**/*.test.ts --timeout 3000"
+    "test": "ts-mocha test/**/*.test.ts --timeout 20000"
   },
   "keywords": [
     "AWS",

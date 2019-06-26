@@ -5,7 +5,7 @@ import { assert } from 'chai'
 import { iam } from '../src/aws/iam'
 import { main } from '../src/delete_policy'
 
-describe('delete_policy', () => {
+describe('delete_policy on terminate stage', () => {
   before(async () => {
     const roleDir = path.resolve(__dirname, './fixtures/terminate/roles')
     const globPromise = util.promisify(glob)
