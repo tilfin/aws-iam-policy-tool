@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 
-const awsIamPolicy = require('../');
+import * as awsIamPolicy from '../src'
 
 let exportPolicy = awsIamPolicy.exportPolicy;
 let exportRole = awsIamPolicy.exportRole;
@@ -12,12 +12,12 @@ let deletePolicy = awsIamPolicy.deletePolicy;
 
 describe('require each module', () => {
   it('loads valid', () => {
-    assert.isFunction(exportPolicy, 'exportPolicy is not loaded');
-    assert.isFunction(exportRole, 'exportRole is not loaded');
-    assert.isFunction(importPolicy, 'importPolicy is not loaded');
-    assert.isFunction(importRole, 'importRole is not loaded');
-    assert.isFunction(validatePolicy, 'validatePolicy is not loaded');
-    assert.isFunction(validateRole, 'validateRole is not loaded');
-    assert.isFunction(deletePolicy, 'deletePolicy is not loaded');
+    assert.isFunction(exportPolicy, 'exportPolicy is not loaded')
+    assert.isFunction(exportRole, 'exportRole is not loaded')
+    assert.isFunction(importPolicy, 'importPolicy is not loaded')
+    assert.isFunction(importRole, 'importRole is not loaded')
+    assert.isFunction(validatePolicy, 'validatePolicy is not loaded')
+    assert.isFunction(validateRole, 'validateRole is not loaded')
+    assert.isFunction(deletePolicy, 'deletePolicy is not loaded')
   })
 })
