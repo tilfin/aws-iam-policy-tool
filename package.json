@@ -1,6 +1,6 @@
 {
   "name": "aws-iam-policy-tool",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "AWS IAM role/policy management cli tool",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,7 +25,6 @@
     "promised-lifestream": "^0.7.0"
   },
   "devDependencies": {
-    "@types/aws-sdk": "^2.7.0",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.10",
@@ -39,5 +38,18 @@
   },
   "engines": {
     "node": ">=8.10"
-  }
+  },
+  "directories": {
+    "example": "example",
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tilfin/aws-iam-policy-tool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tilfin/aws-iam-policy-tool/issues"
+  },
+  "homepage": "https://github.com/tilfin/aws-iam-policy-tool#readme"
 }
