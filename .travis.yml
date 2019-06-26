@@ -7,7 +7,7 @@ services:
   - docker
 
 env:
-  - DOCKER_COMPOSE_VERSION=1.8.0 AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy
+  - NODE_ENV=test DOCKER_COMPOSE_VERSION=1.8.0 AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose

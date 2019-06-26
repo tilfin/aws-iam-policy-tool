@@ -51,15 +51,17 @@ export async function main(nameMatcher: any, opts = {}) {
       return
     }
 
-    const answer = await prompt('Do you really delete above policies? yes|no> ')
-    if (answer !== 'yes') {
-      console.info('Abort.')
-      return
+    if (process.env.NODE_ENV !== 'test') {
+      const answer = await prompt('Do you really delete above policies? yes|no> ')
+      if (answer !== 'yes') {
+        console.info('Abort.')
+        return
+      }
     }
 
     return promisedLife([
       StreamUtils.readArray(policies),
-      promisedStream((policy: IAM.Policy) => deletePolicy(policy) ),
+      promisedStream((policy: IAM.Policy) => deletePolicy(policy)),
       createWriter(opts)
     ])
   } catch(err) {
