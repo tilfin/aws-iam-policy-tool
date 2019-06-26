@@ -21,5 +21,5 @@ const opts = {
   plain: program.plain || program.json,
 };
 
-const main = require('../lib/delete_policy');
+const { main } = require('../lib/delete_policy');
 main(pattern, opts);

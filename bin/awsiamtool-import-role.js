@@ -27,5 +27,5 @@ const opts = {
   plain: program.plain || program.json,
 };
 
-const main = require('../lib/import_role');
+const { main } = require('../lib/import_role');
 main(dir, varSet, opts);

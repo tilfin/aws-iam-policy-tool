@@ -18,7 +18,7 @@ if (args.length < 1) {
 const outdir = args[0];
 const pattern = args.length > 1 ? new RegExp(args[1]) : null;
 
-const main = require('../lib/export_role');
+const { main } = require('../lib/export_role');
 
 try { fs.mkdirSync(outdir); } catch(err) {}
 main(outdir, pattern, { json: program.json, plain: program.plain });

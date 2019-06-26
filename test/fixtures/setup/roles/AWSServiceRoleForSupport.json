@@ -1,0 +1,27 @@
+{
+    "Role": {
+        "Path": "/aws-service-role/support.amazonaws.com/",
+        "RoleName": "AWSServiceRoleForSupport",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "support.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "Description": "Enables resource access for AWS to provide billing, administrative and support services",
+        "MaxSessionDuration": 3600,
+        "Tags": []
+    },
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AWSSupportServiceRolePolicy",
+            "PolicyArn": "arn:aws:iam::aws:policy/aws-service-role/AWSSupportServiceRolePolicy"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+{
+  "Role": {
+      "Path": "/",
+      "RoleName": "baz-ecs-api-ENV",
+      "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Principal": {
+                      "Service": "ecs-tasks.amazonaws.com"
+                  },
+                  "Action": "sts:AssumeRole"
+              }
+          ]
+      },
+      "MaxSessionDuration": 7200,
+      "Tags": []
+  },
+  "AttachedPolicies": [
+      {
+          "PolicyName": "baz-dynamodb-users-ENV",
+          "PolicyArn": "arn:aws:iam::ACCOUNT_ID:policy/baz-dynamodb-users-ENV"
+      }
+  ]
+}

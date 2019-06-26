@@ -1,5 +1,20 @@
 language: node_js
 node_js:
- - "10.10"
- - "8.10"
-script: npm test
+  - "10.10"
+  - "8.10"
+
+services:
+  - docker
+
+env:
+  - NODE_ENV=test DOCKER_COMPOSE_VERSION=1.8.0 AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker-compose up -d
+
+script:
+  - npm test

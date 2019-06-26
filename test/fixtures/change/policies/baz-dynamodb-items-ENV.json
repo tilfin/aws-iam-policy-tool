@@ -1,0 +1,21 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:UpdateItem"
+            ],
+            "Resource": "arn:aws:dynamodb:ap-northeast-1:ACCOUNT_ID:table/baz-dynamodb-items-ENV"
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "dynamodb:DeleteTable"
+            ],
+            "Resource": "arn:aws:dynamodb:ap-northeast-1:ACCOUNT_ID:table/baz-dynamodb-items-ENV"
+        }
+    ]
+}

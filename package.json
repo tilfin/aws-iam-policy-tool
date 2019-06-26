@@ -1,13 +1,15 @@
 {
   "name": "aws-iam-policy-tool",
-  "version": "0.1.2",
+  "version": "0.3.0",
   "description": "AWS IAM role/policy management cli tool",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "bin": {
     "awsiamtool": "./bin/awsiamtool"
   },
   "scripts": {
-    "test": "mocha"
+    "build": "tsc",
+    "test": "ts-mocha test/**/*.test.ts --timeout 20000"
   },
   "keywords": [
     "AWS",
@@ -23,9 +25,17 @@
     "promised-lifestream": "^0.7.0"
   },
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.10",
     "chai": "^4.2.0",
+    "del": "^4.1.1",
     "extend-aws-error": "^0.5.0",
-    "mocha": "^6.1.4"
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "ts-mocha": "^6.0.0",
+    "typescript": "^3.5.2"
   },
   "engines": {
     "node": ">=8.10"
