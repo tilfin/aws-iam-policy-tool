@@ -1,10 +1,10 @@
 import path from 'path'
-import { iam } from './iam'
 import { IAM } from 'aws-sdk'
 import { readFile } from '../utils/file'
 import { parseJSON } from '../utils/varset'
+import { getRole } from './operation';
 
-export interface MyStatement {
+export interface StatementNode {
   Effect: string
   Principal: {
     Federated: string
@@ -14,75 +14,82 @@ export interface MyStatement {
   Condition: any
 }
 
-export type MyRole = {
+export interface AssumeRolePolicyDocumentNode {
+  Version: string
+  Statement: StatementNode[]
+}
+
+export interface IRoleNode {
   RoleName: string
   Path: string
-  AssumeRolePolicyDocument: {
-    Version: string
-    Statement: MyStatement[]
+  AssumeRolePolicyDocument?: AssumeRolePolicyDocumentNode
+}
+
+export class RoleNode implements IRoleNode {
+  RoleName: string
+  Path: string
+  AssumeRolePolicyDocument?: AssumeRolePolicyDocumentNode
+
+  constructor(RoleName: string, Path: string, AssumeRolePolicyDocument?: AssumeRolePolicyDocumentNode) {
+    this.RoleName = RoleName;
+    this.Path = Path;
+    this.AssumeRolePolicyDocument = AssumeRolePolicyDocument;
+  }
+
+  get isEc2Role(): boolean {
+    if (this.AssumeRolePolicyDocument) {
+      return this.AssumeRolePolicyDocument.Statement[0]!.Principal.Service === "ec2.amazonaws.com"
+    } else {
+      return false
+    }
+  }
+
+  toCreateRoleParams(): IAM.CreateRoleRequest {
+    return {
+      RoleName: this.RoleName,
+      Path: this.Path,
+      AssumeRolePolicyDocument: JSON.stringify(this.AssumeRolePolicyDocument, null, 4)
+    }
+  }
+
+  static async findRole(roleName: string): Promise<RoleNode> {
+    const role = await getRole(roleName)
+    return this.fromIAMRole(role!)
+  }
+
+  static fromIAMRole(role: IAM.Role) {
+    return new RoleNode(
+      role.RoleName,
+      role.Path,
+      role.AssumeRolePolicyDocument ? JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument!)) : undefined
+    )
   }
 }
 
-export type MyRoleDocument = {
-  Role: MyRole
+export type RoleDocument = {
+  Role: RoleNode
   AttachedPolicies: IAM.AttachedPolicy[]
 }
 
-export type LocalRoleFile = {
-  name: string
-  document: MyRoleDocument
-}
+export class RoleEntry {
+  name: string;
+  Role: RoleNode;
+  AttachedPolicies: IAM.AttachedPolicy[];
 
-export async function createRole(role: any): Promise<IAM.Role> {
-  const params = Object.assign({}, role)
-  params.AssumeRolePolicyDocument = JSON.stringify(params.AssumeRolePolicyDocument, null, 4)
-  const data = await iam.createRole(params).promise()
-  return data.Role
-}
-
-export async function getAttachedPoliciesByRole(roleName: string): Promise<IAM.AttachedPolicy[]> {
-  const params = { RoleName: roleName }
-  const data = await iam.listAttachedRolePolicies(params).promise()
-  return data.AttachedPolicies!
-}
-
-export async function getRole(roleName: string): Promise<IAM.Role | null> {
-  try {
-    const params = { RoleName: roleName }
-    const data = await iam.getRole(params).promise()
-    const role = data.Role
-    role.AssumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument!))
-    return role
-  } catch(err) {
-    if (err.code === 'NoSuchEntity') return null
-    throw err
+  constructor(name: string, document: RoleDocument) {
+    this.name = name;
+    const { RoleName, Path, AssumeRolePolicyDocument } = document.Role;
+    this.Role = new RoleNode(RoleName, Path, AssumeRolePolicyDocument);
+    this.AttachedPolicies = document.AttachedPolicies;
   }
 }
 
-export async function getInstanceProfile(roleName: string) {
-  try {
-    const params = { InstanceProfileName: roleName }
-    const data = await iam.getInstanceProfile(params).promise()
-    return data.InstanceProfile
-  } catch(err) {
-    if (err.code === 'NoSuchEntity') return null
-    throw err
-  }
-}
-
-export function isEc2Role(role: MyRole) {
-  return role.AssumeRolePolicyDocument.Statement[0]!.Principal.Service === "ec2.amazonaws.com";
-}
-
-export async function readRoleFile(filePath: string, varSet: any): Promise<LocalRoleFile> {
+export async function readRoleFile(filePath: string, varSet: any): Promise<RoleEntry> {
   let name: string = ''
   try {
     name = path.basename(filePath, '.json')
     const text = await readFile(filePath)
-    return {
-      name,
-      document: parseJSON(text, varSet) as MyRoleDocument,
-    }
+    return new RoleEntry(name, parseJSON(text, varSet) as RoleDocument)
   } catch(err) {
     console.error(`Failed to read ${name}`)
     throw err

@@ -5,7 +5,7 @@ const promisedLife = require('promised-lifestream')
 
 import { iam } from './aws/iam'
 import { IAM } from 'aws-sdk'
-import { MyRoleDocument } from './aws/role'
+import { RoleDocument } from './aws/role'
 import { ListRoleStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
@@ -34,7 +34,7 @@ async function writeRoleFile(parentDir: string, item: ListRolePoliciesResult) {
     role.AssumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument))
   }
 
-  const result: MyRoleDocument = {
+  const result: RoleDocument = {
     Role: role,
     AttachedPolicies: item.AttachedPolicies,
   }

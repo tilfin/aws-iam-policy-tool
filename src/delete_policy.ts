@@ -20,7 +20,7 @@ async function deletePolicy(policy: IAM.Policy) {
 
   try {
     await iam.deletePolicy(params).promise()
-    OK('Deleted %1', policy.PolicyName!)
+    return OK('Deleted %1', policy.PolicyName!)
   } catch(err) {
     if (err.code === 'DeleteConflict') {
       return NG('Failed to delete %1 attached on some roles', policy.PolicyName!)

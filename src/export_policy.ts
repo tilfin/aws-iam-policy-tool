@@ -9,12 +9,12 @@ import { createWriter } from './utils/result_writer'
 import { writeJSONFile } from './utils/file'
 import { ListPolicyStream } from './aws/list_stream'
 import { OK, NG, Result } from './utils/result'
-import { getPolicyDefaultVersion, GetPolicyVersionResult } from './aws/policy'
+import { PolicyEntry, PolicyFetcher } from './aws/policy'
 
 
-async function writePolicyFile(parentDir: string, name: string, doc: string): Promise<Result> {
-  const content = JSON.parse(decodeURIComponent(doc))
-  const fileName = `${name}.json`
+async function writePolicyFile(parentDir: string, entry: PolicyEntry): Promise<Result> {
+  const content = entry.document
+  const fileName = `${entry.name}.json`
 
   try {
     await writeJSONFile(parentDir, fileName, content)
@@ -26,6 +26,8 @@ async function writePolicyFile(parentDir: string, name: string, doc: string): Pr
 
 
 export async function main(outDir: string, nameMatcher: any, opts: any = {}) {
+  const policyFetcher = new PolicyFetcher()
+
   try {
     return await promisedLife([
       new ListPolicyStream({
@@ -35,8 +37,8 @@ export async function main(outDir: string, nameMatcher: any, opts: any = {}) {
       filterStream((policy: IAM.Policy) => {
         return (!nameMatcher || policy.PolicyName!.match(nameMatcher))
       }),
-      promisedStream((policy: IAM.Policy) => getPolicyDefaultVersion(policy)),
-      promisedStream((item: GetPolicyVersionResult) => writePolicyFile(outDir, item.name, item.document)),
+      promisedStream((policy: IAM.Policy) => policyFetcher.getPolicyVersion(policy.Arn!, policy.DefaultVersionId!)),
+      promisedStream((entry: PolicyEntry) => writePolicyFile(outDir, entry)),
       createWriter(opts)
     ])
   } catch(err) {
