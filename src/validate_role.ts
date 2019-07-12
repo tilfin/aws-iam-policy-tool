@@ -5,10 +5,11 @@ const promisedLife = require('promised-lifestream')
 const StreamUtils = require('@tilfin/stream-utils')
 
 import { promisedStream } from './utils/stream'
-import { readRoleFile, LocalRoleFile } from "./aws/role"
+import { RoleEntry } from "./aws/role"
 import { createWriter } from './utils/result_writer'
 import { RoleValidator } from './logic/role_validator'
 import { listJsonFiles } from './utils/file'
+import { readRoleFile } from './aws/file_reader';
 
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {
@@ -19,7 +20,7 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
   await promisedLife([
     StreamUtils.readArray(jsonFiles),
     promisedStream((filePath: string) => readRoleFile(filePath, varSet)),
-    promisedStream((file: LocalRoleFile) => validator.validate(file)),
+    promisedStream((file: RoleEntry) => validator.validate(file)),
     createWriter(opts)
   ])
 

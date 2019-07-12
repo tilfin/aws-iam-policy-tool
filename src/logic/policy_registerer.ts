@@ -1,33 +1,37 @@
 import {
-  createPolicy,
-  createPolicyDefaultVersion,
-  deletePolicyVersion,
   getPolicyArnPrefix,
-  getPolicyDefaultWithVersionInfoByArn,
-  convertDocToJSON,
-  LocalPolicyFile
+  PolicyEntry,
+  PolicyFetcher,
 } from '../aws/policy'
 import { OK, NG, Skip, Result } from '../utils/result'
+import { createPolicy, ArnType, deletePolicyVersion, createPolicyDefaultVersion } from '../aws/operation'
 
 
 export class PolicyRegisterer {
 	private _color: boolean;
 	private _overwrite: boolean;
+  private policyFetcher!: PolicyFetcher
 
   constructor(opts: any = {}) {
     this._color = !(opts['plain'] || false)
     this._overwrite = opts['overwrite'] || false
   }
 
-  async register(policyFileInfo: LocalPolicyFile): Promise<Result> {
-    const { name } = policyFileInfo
+  async prepare(): Promise<ArnType> {
+    const arnPrefix = await getPolicyArnPrefix()
+    this.policyFetcher = new PolicyFetcher(arnPrefix)
+    return arnPrefix;
+  }
+
+  async register(entry: PolicyEntry): Promise<Result> {
+    const { name } = entry
     try {
-      await createPolicy(policyFileInfo, 4)
+      await createPolicy(entry.toCreatePolicyParams(4))
       return OK('Created %1', name)
     } catch(err) {
       if (err.code === 'EntityAlreadyExists') {
         if (this._overwrite) {
-          return this._updatePolicyVersion(policyFileInfo)
+          return this.updatePolicyVersion(entry)
         } else {
           return Skip('%1 already exists.', name)
         }
@@ -38,25 +42,24 @@ export class PolicyRegisterer {
     }
   }
 
-  async _updatePolicyVersion({ name, document }: LocalPolicyFile): Promise<Result> {
-    const docJSON = convertDocToJSON(document, 4)
-
-    const arnPrefix = await getPolicyArnPrefix()
+  private async updatePolicyVersion(entry: PolicyEntry): Promise<Result> {
+    const { name } = entry
+    const localDocJson = entry.documentAsJson()
     const {
       oldestId: deleteVerId,
       count,
-      currentPolicy,
-    } = await getPolicyDefaultWithVersionInfoByArn(`${arnPrefix}/${name}`)
+      currentPolicy: remotePolicy,
+    } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(name)
 
-    if (docJSON === decodeURIComponent(currentPolicy.document)) {
+    if (localDocJson === remotePolicy.documentAsJson()) {
       return Skip('%1 not changed', name);
     } else {
       if (count === 5) {
-        await deletePolicyVersion(currentPolicy.arn, deleteVerId)
-        await createPolicyDefaultVersion(currentPolicy.arn, docJSON, 4)
+        await deletePolicyVersion(remotePolicy.arn, deleteVerId)
+        await createPolicyDefaultVersion(remotePolicy.arn, localDocJson)
         return OK(`Updated %1 and deleted the oldest ${deleteVerId}`, name)
       } else {
-        await createPolicyDefaultVersion(currentPolicy.arn, docJSON, 4)
+        await createPolicyDefaultVersion(remotePolicy.arn, localDocJson)
         return OK('Updated %1', name)
       }
     }
