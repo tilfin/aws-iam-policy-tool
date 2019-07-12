@@ -83,15 +83,3 @@ export class RoleEntry {
     this.AttachedPolicies = document.AttachedPolicies;
   }
 }
-
-export async function readRoleFile(filePath: string, varSet: any): Promise<RoleEntry> {
-  let name: string = ''
-  try {
-    name = path.basename(filePath, '.json')
-    const text = await readFile(filePath)
-    return new RoleEntry(name, parseJSON(text, varSet) as RoleDocument)
-  } catch(err) {
-    console.error(`Failed to read ${name}`)
-    throw err
-  }
-}

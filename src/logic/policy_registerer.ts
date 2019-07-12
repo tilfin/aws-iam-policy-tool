@@ -31,7 +31,7 @@ export class PolicyRegisterer {
     } catch(err) {
       if (err.code === 'EntityAlreadyExists') {
         if (this._overwrite) {
-          return this._updatePolicyVersion(entry)
+          return this.updatePolicyVersion(entry)
         } else {
           return Skip('%1 already exists.', name)
         }
@@ -42,7 +42,7 @@ export class PolicyRegisterer {
     }
   }
 
-  async _updatePolicyVersion(entry: PolicyEntry): Promise<Result> {
+  private async updatePolicyVersion(entry: PolicyEntry): Promise<Result> {
     const { name } = entry
     const localDocJson = entry.documentAsJson()
     const {

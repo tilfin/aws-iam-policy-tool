@@ -2,7 +2,7 @@ const jsonDiff = require('json-diff')
 
 import { PolicyEntry, getPolicyArnPrefix, PolicyFetcher } from "../aws/policy"
 import { NG, Result, OK } from "../utils/result"
-import { ArnType } from "../aws/operation";
+import { ArnType } from "../aws/operation"
 
 
 export class PolicyValidator {

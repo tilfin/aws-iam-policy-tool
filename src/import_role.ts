@@ -6,9 +6,10 @@ const StreamUtils = require('@tilfin/stream-utils')
 
 import { promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
-import { readRoleFile, RoleEntry } from './aws/role'
+import { RoleEntry } from './aws/role'
 import { listJsonFiles } from './utils/file'
 import { RoleRegisterer } from './logic/role_registerer'
+import { readRoleFile } from './aws/file_reader';
 
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {

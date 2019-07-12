@@ -6,9 +6,10 @@ const StreamUtils = require('@tilfin/stream-utils')
 
 import { promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
-import { readPolicyFile, PolicyEntry } from './aws/policy'
+import { PolicyEntry } from './aws/policy'
 import { PolicyRegisterer } from './logic/policy_registerer'
 import { listJsonFiles } from './utils/file'
+import { readPolicyFile } from './aws/file_reader';
 
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {

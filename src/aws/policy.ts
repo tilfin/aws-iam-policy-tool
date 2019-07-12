@@ -1,8 +1,5 @@
-import path from 'path'
 import { IAM } from 'aws-sdk'
 import { iam } from './iam'
-import { readFile } from '../utils/file'
-import { substitute, parseJSON } from '../utils/varset'
 import { ArnType, DocJson, listPolicyVersions, getPolicyVersion } from './operation';
 
 export interface PolicyStatementNode {
@@ -141,16 +138,4 @@ export async function getPolicyArnPrefix(): Promise<string> {
     _policyArnPrefix = policies[0].Arn!.split('/')[0]
   }
   return _policyArnPrefix!
-}
-
-export async function readPolicyFile(filePath: string, varSet: any, arnPrefix: ArnType): Promise<PolicyEntry> {
-  let name: string = ''
-  try {
-    name = path.basename(filePath, '.json')
-    const text = await readFile(filePath)
-    return new PolicyEntry(arnPrefix + '/' + substitute(name, varSet), parseJSON(text, varSet))
-  } catch(err) {
-    console.error(`Failed to read ${name}`)
-    throw err
-  }
 }
