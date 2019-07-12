@@ -1,8 +1,8 @@
 const jsonDiff = require('json-diff')
 
-import { MyRole, getAttachedPoliciesByRole, LocalRoleFile } from "../aws/role"
+import { getAttachedPoliciesByRole, RoleNode, RoleEntry, IRoleNode } from "../aws/role"
 import { containPolicy } from "../aws/attach"
-import { isEc2Role, getInstanceProfile, getRole } from '../aws/role'
+import { getInstanceProfile, getRole } from '../aws/role'
 import { OK, NG, Result } from '../utils/result'
 import { IAM } from "aws-sdk"
 
@@ -27,14 +27,14 @@ export class RoleValidator {
     this._invalidCnt = 0
   }
 
-  async validate({ name, document }: LocalRoleFile): Promise<Result[] | null> {
+  async validate(roleEntry: RoleEntry): Promise<Result[] | null> {
     try {
-      const role = document.Role
+      const role = roleEntry.Role
       const roleName = role.RoleName
 
-      await this._validateRoleOrRoleWithInstanceProfile(role)
+      await this._validateRoleOrRoleWithInstanceProfile(roleEntry.Role)
 
-      let results: Result[] | null = await this._validateAttachedPolicies(roleName, document.AttachedPolicies)
+      let results: Result[] | null = await this._validateAttachedPolicies(roleName, roleEntry.AttachedPolicies)
       if (results) return results
 
       return [OK(roleName)]
@@ -47,18 +47,18 @@ export class RoleValidator {
     }
   }
 
-  async _validateRoleOrRoleWithInstanceProfile(definedRole: MyRole) {
+  async _validateRoleOrRoleWithInstanceProfile(definedRole: RoleNode) {
     const roleName = definedRole.RoleName;
 
-    let currentRole: IAM.Role
-    if (isEc2Role(definedRole)) {
+    let currentRole: RoleNode
+    if (definedRole.isEc2Role) {
       const profile = await getInstanceProfile(roleName)
       if (!profile) {
         throw new InvalidRoleError('%1 instance profile does not exist.', roleName)
       }
 
-      currentRole = profile.Roles[0]
-      currentRole.AssumeRolePolicyDocument = JSON.parse(decodeURIComponent(currentRole.AssumeRolePolicyDocument!))
+      const { RoleName, Path, AssumeRolePolicyDocument } = profile.Roles[0]
+      currentRole = new RoleNode(RoleName, Path, AssumeRolePolicyDocument ? JSON.parse(decodeURIComponent(AssumeRolePolicyDocument!)) : undefined)
     } else {
       const gotRole = await getRole(roleName)
       if (!gotRole) {

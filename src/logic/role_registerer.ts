@@ -1,6 +1,6 @@
 'use strict'
 
-import { LocalRoleFile, MyRoleDocument, MyRole, isEc2Role, createRole } from "../aws/role";
+import { RoleEntry, RoleDocument, createRole, RoleNode } from "../aws/role";
 import { iam } from '../aws/iam'
 import { Result, OK, NG, Skip } from '../utils/result'
 import { IAM } from "aws-sdk";
@@ -14,11 +14,11 @@ export class RoleRegisterer {
     this._overwrite = opts['overwrite'] || false
   }
 
-  async register({ name, document }: LocalRoleFile) {
+  async register(roleEntry: RoleEntry) {
     try {
       const results: Result[] = []
-      await this._createRoleOrWithInstanceProfile(document, results)
-      const rolePolicies = await this._getRolePolicies(document)
+      await this._createRoleOrWithInstanceProfile(roleEntry, results)
+      const rolePolicies = await this._getRolePolicies(roleEntry)
 
       const attachPromises: Promise<Result>[] = []
       const attachResults: Result[] = await Promise.all(attachPromises.concat(
@@ -36,10 +36,10 @@ export class RoleRegisterer {
     }
   }
 
-  async _createRoleOrWithInstanceProfile(document: MyRoleDocument, results: Result[]) {
-    const roleName = document.Role.RoleName
-    const createdRole = await this._createRole(document, results)
-    if (createdRole && isEc2Role(document.Role)) {
+  async _createRoleOrWithInstanceProfile(roleEntry: RoleEntry, results: Result[]) {
+    const roleName = roleEntry.Role.RoleName
+    const createdRole = await this._createRole(roleEntry, results)
+    if (createdRole && roleEntry.Role.isEc2Role) {
       const result = await this._createInstanceProfile(roleName, results)
       if (result !== null) {
         await this._addRoleToInstanceProfile(roleName, roleName, results)
@@ -48,7 +48,7 @@ export class RoleRegisterer {
     return createdRole
   }
 
-  async _createRole(doc: MyRoleDocument, results: Result[]): Promise<MyRole | Result | null> {
+  async _createRole(doc: RoleDocument, results: Result[]): Promise<RoleNode | Result | null> {
     const roleName = doc.Role.RoleName
 
     if (doc.Role.Path.startsWith('/aws-service-role/')) {
@@ -109,7 +109,7 @@ export class RoleRegisterer {
     }
   }
 
-  async _getRolePolicies(role: MyRoleDocument) {
+  async _getRolePolicies(role: RoleDocument) {
     const roleName = role.Role.RoleName
     const policyList = role.AttachedPolicies.map((item: IAM.AttachedPolicy) => {
       return {
