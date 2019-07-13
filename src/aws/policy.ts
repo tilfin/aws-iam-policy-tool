@@ -5,6 +5,7 @@ import {
   DocJson,
   listPolicyVersions,
   getPolicyVersion,
+  getPolicy,
 } from './operation'
 
 export interface PolicyStatementNode {
@@ -29,18 +30,25 @@ export class PolicyEntry {
   policyNode: PolicyNode
   document: PolicyDocumentNode
 
-  constructor(arn: ArnType, document: PolicyDocumentNode) {
-    this.arn = arn
-    const arnParts = arn.split('/')
+  constructor(policy: IAM.Policy, document: PolicyDocumentNode) {
+    this.arn = policy.Arn!
     this.policyNode = {
-      PolicyName: arnParts[arnParts.length - 1],
-      Path: arnParts.length === 3 ? arnParts[1] : undefined,
+      PolicyName: policy.PolicyName!,
+      Path: policy.Path || '/',
     }
     this.document = document
+    console.log(this.policyNode)
   }
 
   get policyName(): string {
     return this.policyNode.PolicyName
+  }
+
+  asJson(): any {
+    return {
+      Policy: this.policyNode,
+      Document: this.document,
+    }
   }
 
   documentAsJson(): DocJson {
@@ -77,38 +85,41 @@ export class PolicyFetcher {
     this.arnPrefix = arnPrefix
   }
 
+  async getPolicyEntry(arn: string, versionId: string) {
+    const [policyInfo, docNode] = await Promise.all([
+      getPolicy(arn),
+      this.getPolicyDocumentVersion(arn, versionId),
+    ])
+    return new PolicyEntry(policyInfo, docNode)
+  }
+
   async getPolicyDefaultWithVersionInfo(
-    name: string
+    name: string,
+    path: string = '/'
   ): Promise<GetPolicyDefaultWithVersionInfoResult & PolicyVersionsInfo> {
-    const arn = `${this.arnPrefix!}/${name}`
+    const arn = `${this.arnPrefix!}${path}${name}`
 
     const versions = await listPolicyVersions(arn)
     if (versions.length === 0) {
       throw new Error('Failed to get policy versions')
     }
 
-    const { defaultId, oldestId, count } = this.getPolicyVersionsInfoFrom(
-      versions
-    )
+    const { defaultId, oldestId, count } = this.getPolicyVersionsInfoFrom(versions)
 
     return {
       defaultId,
       oldestId,
       count,
-      currentPolicy: await this.getPolicyVersion(arn, defaultId),
+      currentPolicy: await this.getPolicyEntry(arn, defaultId),
     }
   }
 
-  async getPolicyVersion(
+  async getPolicyDocumentVersion(
     policyArn: string,
     verionId: string
-  ): Promise<PolicyEntry> {
+  ): Promise<PolicyDocumentNode> {
     const result = await getPolicyVersion(policyArn, verionId)
-    const docNode: PolicyDocumentNode = JSON.parse(
-      decodeURIComponent(result.Document!)
-    )
-
-    return new PolicyEntry(policyArn, docNode)
+    return JSON.parse(decodeURIComponent(result.Document!))
   }
 
   private getPolicyVersionsInfoFrom(

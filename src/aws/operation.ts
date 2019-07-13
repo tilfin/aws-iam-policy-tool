@@ -56,6 +56,12 @@ export async function listPolicyVersions(
   return data.Versions || []
 }
 
+export async function getPolicy(arn: string): Promise<IAM.Policy> {
+  const params = { PolicyArn: arn }
+  const data = await iam.getPolicy(params).promise()
+  return data.Policy!
+}
+
 export async function getPolicyVersion(
   arn: string,
   verionId: string
