@@ -1,5 +1,6 @@
 .travis.yml
 .vscode/
+.nyc_output/
 src/
 test/
 example/

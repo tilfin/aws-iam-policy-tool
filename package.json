@@ -62,5 +62,20 @@
   "bugs": {
     "url": "https://github.com/tilfin/aws-iam-policy-tool/issues"
   },
-  "homepage": "https://github.com/tilfin/aws-iam-policy-tool#readme"
+  "homepage": "https://github.com/tilfin/aws-iam-policy-tool#readme",
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "reporter": [
+      "json",
+      "html",
+      "text"
+    ],
+    "sourceMap":true,
+    "all": true
+  }
 }
