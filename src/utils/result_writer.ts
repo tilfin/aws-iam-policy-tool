@@ -60,6 +60,7 @@ function expandMessage(result: any, bold: boolean) {
 }
 
 export function createWriter(opts: any = {}) {
+  if (opts.writer) return opts.writer
   return opts.json
     ? new JSONResultWriter()
     : new ConsoleResultWriter({ plain: opts.plain })

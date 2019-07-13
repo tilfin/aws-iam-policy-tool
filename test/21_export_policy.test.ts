@@ -1,6 +1,7 @@
 const del = require('del')
 import path from 'path'
 import { assert } from 'chai'
+import { writeArray } from '@tilfin/stream-utils'
 
 import { main } from '../src/export_policy'
 
@@ -11,8 +12,11 @@ describe('export_policy on setup stage', () => {
     await del([`${outDir}/*.json`])
   })
 
-  it('returns true', async () => {
-    const result = await main(outDir, "\-test$", {})
-    return result
+  it('returns true', done => {
+    const writer = writeArray((err, values) => {
+      console.log(values)
+      done(err)
+    })
+    main(outDir, "\-test$", { writer })
   })
 })

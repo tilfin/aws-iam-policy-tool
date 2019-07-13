@@ -2,6 +2,7 @@ const glob = require('glob')
 import util from 'util'
 import path from 'path'
 import { assert } from 'chai'
+import { writeArray } from '@tilfin/stream-utils'
 import { iam } from '../src/aws/iam'
 import { main } from '../src/delete_policy'
 
@@ -33,8 +34,11 @@ describe('delete_policy on terminate stage', () => {
     }
   })
 
-  it('returns true', async () => {
-    const result = await main("\-test$", {})
-    return result
+  it('returns true', done => {
+    const writer = writeArray((err, values) => {
+      console.log(values)
+      done(err)
+    })
+    main("\-test$", { writer })
   })
 })
