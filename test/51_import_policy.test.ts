@@ -27,13 +27,6 @@ describe('import_policy on change stage', () => {
     })
 
     assert.deepEqual(values.shift(), {
-      status: 'NG',
-      message: '%1 is invalid Policy JSON format.',
-      target: 'baz-dynamodb-items-v2',
-      diff: undefined
-    })
-
-    assert.deepEqual(values.shift(), {
       status: 'OK',
       message: 'Created %1',
       target: 'baz-dynamodb-users-test',

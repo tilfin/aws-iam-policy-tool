@@ -10,13 +10,15 @@ describe('import_role on terminate stage', () => {
   context('when roles have no attached policies', () => {
     it('detaches policies from roles', async () => {
       let values: any[]
-      const writer = writeArray((_, vals) => { values = vals })
+      const writer = writeArray((_, vals) => {
+        values = vals.sort((a, b) => [].concat(a.target)[0].localeCompare([].concat(b.target)[0]))
+      })
   
       await main(inDir, {
         ENV: 'test',
         ACCOUNT_ID: process.env.ACCOUNT_ID,
       }, { writer })
-      
+
       assert.deepEqual(values.shift(), {
         status: 'Skip',
         message: 'Role: %1 already exists.',
@@ -31,16 +33,16 @@ describe('import_role on terminate stage', () => {
       })
 
       assert.deepEqual(values.shift(), {
-        status: 'Skip',
-        message: 'Role: %1 already exists.',
-        target: 'baz-ecs-api-test'
-      })
-
-      assert.deepEqual(values.shift(), {
         status: 'OK',
         message: 'Detached %1 on %2',
         target: ['baz-dynamodb-users-test', 'baz-ecs-api-test'],
         diff: undefined
+      })
+
+      assert.deepEqual(values.shift(), {
+        status: 'Skip',
+        message: 'Role: %1 already exists.',
+        target: 'baz-ecs-api-test'
       })
 
       assert.deepEqual(values.shift(), {

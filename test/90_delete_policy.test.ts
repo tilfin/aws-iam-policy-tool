@@ -37,10 +37,10 @@ describe('delete_policy on terminate stage', () => {
   it('succeeds with valid results', async () => {
     let values: any[]
     const writer = writeArray((_, vals) => {
-      values = vals.sort((a, b) => a.target.localeCompare(b.target))
+      values = vals.sort((a, b) => [].concat(a.target)[0].localeCompare([].concat(b.target)[0]))
     })
 
-    await main("\-test$", { writer })
+    await main("\-test$", { noconfirm: true, writer })
 
     assert.deepEqual(values.shift(), {
       status: 'OK',
@@ -50,8 +50,15 @@ describe('delete_policy on terminate stage', () => {
     })
 
     assert.deepEqual(values.shift(), {
-      status: 'NG',
-      message: 'Failed to delete %1 attached on some roles',
+      status: 'OK',
+      message: 'Deleted %1 %2',
+      target: ['baz-dynamodb-items-test', 'v1'],
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Deleted %1',
       target: 'baz-dynamodb-items-test',
       diff: undefined
     })

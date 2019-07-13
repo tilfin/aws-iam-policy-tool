@@ -50,13 +50,6 @@ describe('validate_policy on change stage', () => {
     assert.deepEqual(values.shift(), {
       status: 'NG',
       message: '%1 does not exist.',
-      target: 'baz-dynamodb-items-v2',
-      diff: undefined
-    })
-
-    assert.deepEqual(values.shift(), {
-      status: 'NG',
-      message: '%1 does not exist.',
       target: 'baz-dynamodb-users-test',
       diff: undefined
     })

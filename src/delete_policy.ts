@@ -11,27 +11,9 @@ import { ListPolicyStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
 import { OK, NG } from './utils/result'
 import { createWriter } from './utils/result_writer'
+import { PolicyCleaner } from './logic/policy_cleaner';
 
-async function deletePolicy(policy: IAM.Policy) {
-  const params: IAM.DeletePolicyRequest = {
-    PolicyArn: policy.Arn!,
-  }
-
-  try {
-    await iam.deletePolicy(params).promise()
-    return OK('Deleted %1', policy.PolicyName!)
-  } catch (err) {
-    if (err.code === 'DeleteConflict') {
-      return NG(
-        'Failed to delete %1 attached on some roles',
-        policy.PolicyName!
-      )
-    }
-    throw err
-  }
-}
-
-export async function main(nameMatcher: any, opts = {}) {
+export async function main(nameMatcher: any, opts: any = {}) {
   try {
     const policies = await promisedLife(
       [
@@ -55,7 +37,7 @@ export async function main(nameMatcher: any, opts = {}) {
       return
     }
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && !opts.noconfirm) {
       const answer = await prompt(
         'Do you really delete above policies? yes|no> '
       )
@@ -65,9 +47,11 @@ export async function main(nameMatcher: any, opts = {}) {
       }
     }
 
+    const policyCleaner = new PolicyCleaner()
+
     return promisedLife([
       StreamUtils.readArray(policies),
-      promisedStream((policy: IAM.Policy) => deletePolicy(policy)),
+      promisedStream((policy: IAM.Policy) => policyCleaner.delete(policy)),
       createWriter(opts),
     ])
   } catch (err) {

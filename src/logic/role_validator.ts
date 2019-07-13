@@ -30,10 +30,9 @@ export class RoleValidator {
   }
 
   async validate(roleEntry: RoleEntry): Promise<Result[]> {
-    try {
-      const role = roleEntry.Role
-      const roleName = role.RoleName
+    const roleName = roleEntry.Role.RoleName
 
+    try {
       await this._validateRoleOrRoleWithInstanceProfile(roleEntry.Role)
 
       const results = await this._validatePolicies(roleName, roleEntry.AttachedPolicies)
@@ -48,7 +47,7 @@ export class RoleValidator {
         this._invalidCnt++
         return [NG(err.message, err.target, err.diff)]
       }
-      return [NG('Role: %1 is invalid JSON format.', name)]
+      return [NG('Role: %1 is invalid JSON format.', roleName)]
     }
   }
 
