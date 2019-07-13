@@ -18,7 +18,7 @@ describe('export_role on setup stage', () => {
       values = vals.sort((a, b) => a.target.localeCompare(b.target))
     })
 
-    await main(outDir, "\-test$", { writer })
+    await main(outDir, "\-test|qux\-lambda\-role$", { writer })
 
     assert.deepEqual(values.shift(), {
       status: 'OK',

@@ -25,7 +25,7 @@ export class PolicyValidator {
     try {
       const {
         currentPolicy: remotePolicy,
-      } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(policyName)
+      } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(entry)
       if (!remotePolicy) {
         this._invalidCnt++
         return NG('%1 does not exist.', policyName)

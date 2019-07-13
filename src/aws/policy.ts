@@ -93,11 +93,8 @@ export class PolicyFetcher {
     return new PolicyEntry(arn, policyNode, docNode)
   }
 
-  async getPolicyDefaultWithVersionInfo(
-    name: string,
-    path: string = '/'
-  ): Promise<GetPolicyDefaultWithVersionInfoResult & PolicyVersionsInfo> {
-    const arn = `${this.arnPrefix!}${path}${name}`
+  async getPolicyDefaultWithVersionInfo(entry: PolicyEntry): Promise<GetPolicyDefaultWithVersionInfoResult & PolicyVersionsInfo> {
+    const { arn } = entry
 
     const versions = await listPolicyVersions(arn)
     if (versions.length === 0) {

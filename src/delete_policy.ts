@@ -9,10 +9,10 @@ import { IAM } from 'aws-sdk'
 import { ListPolicyStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
-import { PolicyCleaner } from './logic/policy_cleaner';
+import { PolicyCleaner } from './logic/policy_cleaner'
 
 export async function main(nameMatcher: any, opts: any = {}) {
-  const needConfirm: boolean = !opts.noconfirm
+  const needConfirm = !opts.noconfirm
 
   try {
     const policies = await promisedLife(
