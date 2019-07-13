@@ -29,18 +29,18 @@ export class RoleValidator {
     this._invalidCnt = 0
   }
 
-  async validate(roleEntry: RoleEntry): Promise<Result[] | null> {
+  async validate(roleEntry: RoleEntry): Promise<Result[]> {
     try {
       const role = roleEntry.Role
       const roleName = role.RoleName
 
       await this._validateRoleOrRoleWithInstanceProfile(roleEntry.Role)
 
-      let results: Result[] | null = await this._validateAttachedPolicies(
-        roleName,
-        roleEntry.AttachedPolicies
-      )
-      if (results) return results
+      const results = await this._validatePolicies(roleName, roleEntry.AttachedPolicies)
+      if (results.length) {
+        this._invalidCnt++
+        return results
+      }
 
       return [OK(roleName)]
     } catch (err) {
@@ -53,10 +53,19 @@ export class RoleValidator {
   }
 
   async _validateRoleOrRoleWithInstanceProfile(definedRole: RoleNode) {
-    const roleName = definedRole.RoleName
+    const currentRole: RoleNode = await this._getRoleOrRoleWithInstanceProfile(definedRole)
 
-    let currentRole: RoleNode
-    if (definedRole.isEc2Role) {
+    const current = this._convertForDiff(currentRole)
+    const defined = this._convertForDiff(definedRole)
+    const df = jsonDiff.diffString(current, defined, { color: this._color })
+    if (df) {
+      throw new InvalidRoleError('%1 is invalid.', definedRole.RoleName, df)
+    }
+  }
+
+  private async _getRoleOrRoleWithInstanceProfile(role: RoleNode): Promise<RoleNode> {
+    const { RoleName: roleName, isEc2Role } = role
+    if (isEc2Role) {
       const profile = await getInstanceProfile(roleName)
       if (!profile) {
         throw new InvalidRoleError(
@@ -66,7 +75,7 @@ export class RoleValidator {
       }
 
       const { RoleName, Path, AssumeRolePolicyDocument } = profile.Roles[0]
-      currentRole = new RoleNode(
+      return new RoleNode(
         RoleName,
         Path,
         AssumeRolePolicyDocument
@@ -78,21 +87,14 @@ export class RoleValidator {
       if (!gotRole) {
         throw new InvalidRoleError('%1 does not exist.', roleName)
       }
-      currentRole = gotRole!
-    }
-
-    const current = this._convertForDiff(currentRole)
-    const defined = this._convertForDiff(definedRole)
-    const df = jsonDiff.diffString(current, defined, { color: this._color })
-    if (df) {
-      throw new InvalidRoleError('%1 is invalid.', roleName, df)
+      return gotRole!
     }
   }
 
-  async _validateAttachedPolicies(
+  private async _validatePolicies(
     roleName: string,
     attachedPolicies: IAM.AttachedPolicy[]
-  ): Promise<Result[] | null> {
+  ): Promise<Result[]> {
     const currentPolicies = await getAttachedPoliciesByRole(roleName)
     const results: Result[] = []
     const definedPolicies = attachedPolicies
@@ -119,11 +121,7 @@ export class RoleValidator {
       }
     })
 
-    if (results.length) {
-      this._invalidCnt++
-      return results
-    }
-    return null
+    return results
   }
 
   isValid(): boolean {
