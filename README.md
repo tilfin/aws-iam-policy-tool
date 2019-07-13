@@ -65,7 +65,7 @@ A filename minus the extension (.json) decides the policy name.
         "PolicyName": "yourapp-s3-storage-ENV",
         "Path": "/"
     },
-    "Documen": {
+    "Document": {
         "Version": "2012-10-17",
         "Statement": [
             {
