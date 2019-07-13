@@ -22,7 +22,7 @@ export interface PolicyDocumentNode {
 
 export interface PolicyNode {
   PolicyName: string;
-  Path?: string;
+  Path: string;
 }
 
 export class PolicyEntry {
@@ -30,14 +30,10 @@ export class PolicyEntry {
   policyNode: PolicyNode
   document: PolicyDocumentNode
 
-  constructor(policy: IAM.Policy, document: PolicyDocumentNode) {
-    this.arn = policy.Arn!
-    this.policyNode = {
-      PolicyName: policy.PolicyName!,
-      Path: policy.Path || '/',
-    }
+  constructor(arn: ArnType, policy: PolicyNode, document: PolicyDocumentNode) {
+    this.arn = arn
+    this.policyNode = policy
     this.document = document
-    console.log(this.policyNode)
   }
 
   get policyName(): string {
@@ -90,7 +86,11 @@ export class PolicyFetcher {
       getPolicy(arn),
       this.getPolicyDocumentVersion(arn, versionId),
     ])
-    return new PolicyEntry(policyInfo, docNode)
+    const policyNode: PolicyNode = {
+      PolicyName: policyInfo.PolicyName!,
+      Path: policyInfo.Path || '/',
+    }
+    return new PolicyEntry(arn, policyNode, docNode)
   }
 
   async getPolicyDefaultWithVersionInfo(
