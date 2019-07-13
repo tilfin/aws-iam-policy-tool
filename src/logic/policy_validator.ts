@@ -22,24 +22,24 @@ export class PolicyValidator {
   }
 
   async validate(entry: PolicyEntry): Promise<Result> {
-    const { name, document: localDocument } = entry;
+    const { policyName, document: localDocument } = entry;
     try {
-      const { currentPolicy: remotePolicy } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(name)
+      const { currentPolicy: remotePolicy } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(policyName)
       if (!remotePolicy) {
         this._invalidCnt++
-        return NG('%1 does not exist.', name)
+        return NG('%1 does not exist.', policyName)
       }
 
       const df = jsonDiff.diffString(remotePolicy.document, localDocument, { color: this._color })
       if (df) {
         this._invalidCnt++
-        return NG('%1 is invalid.', name, df)
+        return NG('%1 is invalid.', policyName, df)
       } else {
-        return OK(name)
+        return OK(policyName)
       }
     } catch(err) {
       if (err.code === 'NoSuchEntity') {
-        return NG('%1 does not exist.', name)
+        return NG('%1 does not exist.', policyName)
       }
       throw err
     }

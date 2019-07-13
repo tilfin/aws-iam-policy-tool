@@ -14,32 +14,38 @@ export type PolicyDocumentNode = {
   Statement: PolicyStatementNode[]
 }
 
-export interface PolicyVersionInfo {
-  VersionId: string
-  IsDefaultVersion?: boolean
-  CreateDate?: Date
+export type PolicyNode = {
+  PolicyName: string
+  Path?: string
 }
 
 export class PolicyEntry {
-  name: string;
-  arn: string;
+  arn: ArnType;
+  policyNode: PolicyNode;
   document: PolicyDocumentNode;
-  versionInfo?: PolicyVersionInfo;
 
-  constructor(arn: ArnType, document: PolicyDocumentNode, versionInfo?: PolicyVersionInfo) {
+  constructor(arn: ArnType, document: PolicyDocumentNode) {
     this.arn = arn;
-    this.name = arn.substr(arn.indexOf('/') + 1);
+    const arnParts = arn.split('/');
+    this.policyNode = {
+      PolicyName: arnParts[arnParts.length - 1],
+      Path: arnParts.length === 3 ? arnParts[1] : undefined,
+    };
     this.document = document;
-    this.versionInfo = versionInfo;
   }
 
+  get policyName(): string {
+    return this.policyNode.PolicyName
+  }
+  
   documentAsJson(): DocJson {
     return this.convertDocToJSON(this.document, 4)
   }
 
   toCreatePolicyParams(indent: number): IAM.CreatePolicyRequest {
     return {
-      PolicyName: this.name,
+      PolicyName: this.policyNode.PolicyName,
+      Path: this.policyNode.Path,
       PolicyDocument: this.convertDocToJSON(this.document, indent),
     }
   }
@@ -88,11 +94,7 @@ export class PolicyFetcher {
     const result = await getPolicyVersion(policyArn, verionId)
     const docNode: PolicyDocumentNode = JSON.parse(decodeURIComponent(result.Document!))
 
-    return new PolicyEntry(policyArn, docNode, {
-      VersionId: result.VersionId!,
-      IsDefaultVersion: result.IsDefaultVersion,
-      CreateDate: result.CreateDate,
-    })
+    return new PolicyEntry(policyArn, docNode)
   }
 
   private getPolicyVersionsInfoFrom(versions: IAM.PolicyVersion[]): PolicyVersionsInfo {

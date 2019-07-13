@@ -24,7 +24,7 @@ export class PolicyRegisterer {
   }
 
   async register(entry: PolicyEntry): Promise<Result> {
-    const { name } = entry
+    const name = entry.policyName
     try {
       await createPolicy(entry.toCreatePolicyParams(4))
       return OK('Created %1', name)
@@ -43,7 +43,7 @@ export class PolicyRegisterer {
   }
 
   private async updatePolicyVersion(entry: PolicyEntry): Promise<Result> {
-    const { name } = entry
+    const name = entry.policyName
     const localDocJson = entry.documentAsJson()
     const {
       oldestId: deleteVerId,

@@ -1,7 +1,4 @@
-import path from 'path'
 import { IAM } from 'aws-sdk'
-import { readFile } from '../utils/file'
-import { parseJSON } from '../utils/varset'
 import { getRole } from './operation';
 
 export interface StatementNode {
@@ -67,7 +64,7 @@ export class RoleNode implements IRoleNode {
 }
 
 export type RoleDocument = {
-  Role: RoleNode
+  Role: IRoleNode
   AttachedPolicies: IAM.AttachedPolicy[]
 }
 

@@ -14,7 +14,7 @@ import { PolicyEntry, PolicyFetcher } from './aws/policy'
 
 async function writePolicyFile(parentDir: string, entry: PolicyEntry): Promise<Result> {
   const content = entry.document
-  const fileName = `${entry.name}.json`
+  const fileName = `${entry.policyName}.json`
 
   try {
     await writeJSONFile(parentDir, fileName, content)
