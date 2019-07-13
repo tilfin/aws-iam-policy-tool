@@ -84,6 +84,9 @@ A filename minus the extension (.json) decides the policy name.
 
 See an [example](example) of *Role* and *Policy* definitions.
 
+If you encounter `[WARN] policy-file.json : This policy definition is old version.` message, upgrade your policy definition files to new version. 
+There is [example/upgrade_policy.js](example/upgrade_policy.js) for the conversion script.
+
 ## Install
 
 * Require Node.js 8.10 or later
