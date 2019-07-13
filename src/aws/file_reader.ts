@@ -53,6 +53,7 @@ export async function readPolicyFile(
         Path: '/',
       }
       docNode = rawJson
+      console.warn('[WARN] %s : This policy definition is old version.', path.basename(filePath))
     }
 
     return new PolicyEntry(arn, policyInfo, docNode)

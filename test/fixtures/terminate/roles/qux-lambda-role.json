@@ -1,0 +1,19 @@
+{
+    "Role": {
+        "Path": "/service-role/",
+        "RoleName": "qux-lambda-role",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    },
+    "AttachedPolicies": []
+}
