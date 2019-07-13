@@ -65,7 +65,7 @@ A filename minus the extension (.json) decides the policy name.
         "PolicyName": "yourapp-s3-storage-ENV",
         "Path": "/"
     },
-    "Documen": {
+    "Document": {
         "Version": "2012-10-17",
         "Statement": [
             {
@@ -99,27 +99,23 @@ $ npm install -g aws-iam-policy-tool
 
 ```
 $ awsiamtool --help
+Usage: awsiamtool [options] [command]
 
-  Usage: awsiamtool [options] [command]
+AWS IAM export/import policy/role management tool
 
-  AWS IAM export/import policy/role management tool
+Options:
+  -V, --version                  output the version number
+  -h, --help                     output usage information
 
-
-  Options:
-
-    -V, --version  output the version number
-    -h, --help     output usage information
-
-
-  Commands:
-
-    export-policy <dir> <pattern>  export policies to target directory
-    export-role <dir> <pattern>    export roles to target directory
-    import-policy <dir>            import policies from target directory
-    import-role <dir>              import policies from target directory
-    validate-role <dir>            validate roles with target directory
-    delete-policy <pattern>        delete policies specified regular expression matches
-    help [cmd]                     display help for [cmd]
+Commands:
+  export-policy <dir> <matcher>  export polies to target directory
+  export-role <dir> <matcher>    export roles to target directory
+  import-policy <dir>            import policies from target directory
+  import-role <dir>              import policies from target directory
+  validate-policy <dir>          validate policies with target directory
+  validate-role <dir>            validate roles with target directory
+  delete-policy <matcher>        delete policies specified regular expression matches
+  help [cmd]                     display help for [cmd]
 ```
 
 ### Common command options
