@@ -4,6 +4,5 @@ src/
 test/
 example/
 coverage/
-docker-compose.yml
 tsconfig.json
 out*

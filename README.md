@@ -1,6 +1,7 @@
 # AWS IAM Policy tool
 
 [![NPM Version][npm-image]][npm-url]
+[![Build Status](https://travis-ci.org/tilfin/aws-iam-policy-tool.svg?branch=master)](https://travis-ci.org/tilfin/aws-iam-policy-tool)
 
 A cli tool to manage AWS IAM roles and the policies is useful to operate their definitions as JSON files.
 
