@@ -1,0 +1,24 @@
+{
+    "Policy": {
+        "PolicyName": "baz-dynamodb-items-ENV",
+        "Path": "/"
+    },
+    "Document": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:DescribeStream",
+                    "dynamodb:ListStreams",
+                    "dynamodb:PutItem",
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem"
+                ],
+                "Resource": "arn:aws:dynamodb:ap-northeast-1:ACCOUNT_ID:table/baz-items-ENV"
+            }
+        ]
+    }
+}
