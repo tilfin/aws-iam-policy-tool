@@ -10,7 +10,10 @@ export async function createRole(params: IAM.CreateRoleRequest): Promise<IAM.Rol
 }
 
 export async function getAttachedPoliciesByRole(roleName: string): Promise<IAM.AttachedPolicy[]> {
-  const params = { RoleName: roleName }
+  const params = {
+    RoleName: roleName,
+    MaxItems: 200
+  }
   const data = await iam.listAttachedRolePolicies(params).promise()
   return data.AttachedPolicies!
 }

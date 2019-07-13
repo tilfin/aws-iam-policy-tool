@@ -1,5 +1,5 @@
-import { iam } from './iam'
 import { IAM } from 'aws-sdk'
+import { getAttachedPoliciesByRole } from './operation';
 
 export type RolePolicyPair = {
   RoleName: string
@@ -8,17 +8,12 @@ export type RolePolicyPair = {
 }
 
 export async function diffAttachedPolicies(roleName: string, newPolicies: IAM.AttachedPolicy[]) {
-  const params = {
-    RoleName: roleName,
-    MaxItems: 200
-  }
-
-  const data = await iam.listAttachedRolePolicies(params).promise()
+  const currentPolicies = await getAttachedPoliciesByRole(roleName)
 
   const unchangedPolicies: RolePolicyPair[] = []
   const detachingPolicies: RolePolicyPair[] = []
 
-  data.AttachedPolicies!.forEach(policy => {
+  currentPolicies!.forEach(policy => {
     if (containPolicy(newPolicies, policy)) {
       unchangedPolicies.push({
         RoleName: roleName,
