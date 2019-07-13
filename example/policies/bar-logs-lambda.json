@@ -3,7 +3,7 @@
         "PolicyName": "bar-logs-lambda-ENV",
         "Path": "/"
     },
-    "Document" : {
+    "Document": {
         "Version": "2012-10-17",
         "Statement": [
             {

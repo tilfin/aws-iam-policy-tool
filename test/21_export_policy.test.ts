@@ -18,7 +18,14 @@ describe('export_policy on setup stage', () => {
       values = vals.sort((a, b) => a.target.localeCompare(b.target))
     })
 
-    await main(outDir, '\-test$', { writer })
+    await main(outDir, '\-test|^AWSLambdaBasicExecutionRole\-b3c4ecbd\-319d\-475f$', { writer })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Wrote %1',
+      target: 'AWSLambdaBasicExecutionRole-b3c4ecbd-319d-475f.json',
+      diff: undefined
+    })
 
     assert.deepEqual(values.shift(), {
       status: 'OK',

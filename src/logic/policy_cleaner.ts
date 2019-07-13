@@ -42,7 +42,7 @@ export class PolicyCleaner {
   private async deletePolicyVersion(arn: string, versionId: string) {
     const params = {
       PolicyArn: arn,
-      VersionId: versionId
+      VersionId: versionId,
     }
     return iam.deletePolicyVersion(params).promise()
   }

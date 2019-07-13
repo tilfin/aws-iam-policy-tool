@@ -10,9 +10,9 @@ describe('delete_policy on terminate stage', () => {
   before(async () => {
     const roleDir = path.resolve(__dirname, './fixtures/terminate/roles')
     const globPromise = util.promisify(glob)
-    const files = await globPromise(`${roleDir}/*ENV.json`)
+    const files = await globPromise(`${roleDir}/*.json`)
     const roleNames = files.map(file => {
-      return file.split('/').pop().replace(/\-ENV\.json$/, '-test')
+      return file.split('/').pop().replace(/\.json$/, '').replace(/\-ENV/, '-test')
     })
 
     for (let roleName of roleNames) {
@@ -32,6 +32,22 @@ describe('delete_policy on terminate stage', () => {
         .catch(err => console.error(err.message))
       }
     }
+  })
+
+  it('succeeds with valid results', async () => {
+    let values: any[]
+    const writer = writeArray((_, vals) => {
+      values = vals
+    })
+
+    await main("^AWSLambdaBasicExecutionRole\-b3c4ecbd\-319d\-475f$", { noconfirm: true, writer })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Deleted %1',
+      target: 'AWSLambdaBasicExecutionRole-b3c4ecbd-319d-475f',
+      diff: undefined
+    })
   })
 
   it('succeeds with valid results', async () => {

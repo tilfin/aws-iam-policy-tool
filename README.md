@@ -61,22 +61,31 @@ A filename minus the extension (.json) decides the policy name.
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": "arn:aws:s3:::yourapp-storage-ENV/*"
-        }
-    ]
+    "Policy": {
+        "PolicyName": "yourapp-s3-storage-ENV",
+        "Path": "/"
+    },
+    "Documen": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:DeleteObject"
+                ],
+                "Resource": "arn:aws:s3:::yourapp-storage-ENV/*"
+            }
+        ]
+    }
 }
 ```
 
 See an [example](example) of *Role* and *Policy* definitions.
+
+If you encounter `[WARN] policy-file.json : This policy definition is old version.` message, upgrade your policy definition files to new version. 
+There is [example/upgrade_policy.js](example/upgrade_policy.js) for the conversion script.
 
 ## Install
 

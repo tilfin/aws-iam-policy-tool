@@ -31,5 +31,12 @@ describe('validate_role on setup stage', () => {
       target: 'foo-ec2-admin-test',
       diff: undefined
     })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: '%1',
+      target: 'qux-lambda-role',
+      diff: undefined
+    })
   })
 })

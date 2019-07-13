@@ -14,6 +14,13 @@ describe('validate_policy on setup stage', () => {
     assert.deepEqual(values.shift(), {
       status: 'OK',
       message: '%1',
+      target: 'AWSLambdaBasicExecutionRole-b3c4ecbd-319d-475f',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: '%1',
       target: 'bar-logs-lambda-test',
       diff: undefined
     })

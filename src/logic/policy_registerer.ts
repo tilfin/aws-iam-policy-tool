@@ -49,7 +49,7 @@ export class PolicyRegisterer {
       oldestId: deleteVerId,
       count,
       currentPolicy: remotePolicy,
-    } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(name)
+    } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(entry)
 
     if (localDocJson === remotePolicy.documentAsJson()) {
       return Skip('%1 not changed', name)

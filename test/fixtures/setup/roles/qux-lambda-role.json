@@ -1,0 +1,24 @@
+{
+    "Role": {
+        "Path": "/service-role/",
+        "RoleName": "qux-lambda-role",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    },
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AWSLambdaBasicExecutionRole-b3c4ecbd-319d-475f",
+            "PolicyArn": "arn:aws:iam::ACCOUNT_ID:policy/service-role/AWSLambdaBasicExecutionRole-b3c4ecbd-319d-475f"
+        }
+    ]
+}

@@ -15,11 +15,10 @@ async function writePolicyFile(
   parentDir: string,
   entry: PolicyEntry
 ): Promise<Result> {
-  const content = entry.document
   const fileName = `${entry.policyName}.json`
 
   try {
-    await writeJSONFile(parentDir, fileName, content)
+    await writeJSONFile(parentDir, fileName, entry.asJson())
     return OK('Wrote %1', fileName)
   } catch (err) {
     return NG('Failed to write %1', fileName)
@@ -39,7 +38,7 @@ export async function main(outDir: string, nameMatcher: any, opts: any = {}) {
         return !nameMatcher || policy.PolicyName!.match(nameMatcher)
       }),
       promisedStream((policy: IAM.Policy) =>
-        policyFetcher.getPolicyVersion(policy.Arn!, policy.DefaultVersionId!)
+        policyFetcher.getPolicyEntry(policy.Arn!, policy.DefaultVersionId!)
       ),
       promisedStream((entry: PolicyEntry) => writePolicyFile(outDir, entry)),
       createWriter(opts),

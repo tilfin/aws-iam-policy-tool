@@ -11,11 +11,13 @@
                 "Action": [
                     "dynamodb:BatchGetItem",
                     "dynamodb:BatchWriteItem",
+                    "dynamodb:DescribeStream",
+                    "dynamodb:ListStreams",
                     "dynamodb:PutItem",
                     "dynamodb:Query",
                     "dynamodb:UpdateItem"
                 ],
-                "Resource": "arn:aws:dynamodb:ap-northeast-1:ACCOUNT_ID:table/baz-dynamodb-items-ENV"
+                "Resource": "arn:aws:dynamodb:ap-northeast-1:ACCOUNT_ID:table/baz-items-ENV"
             }
         ]
     }
