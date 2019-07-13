@@ -1,5 +1,8 @@
 module.exports = {
   "extends": ["prettier", "plugin:@typescript-eslint/recommended"],
+  "env": {
+    mocha: true
+  },
   "overrides": [
     {
       "files": ["*.ts"]

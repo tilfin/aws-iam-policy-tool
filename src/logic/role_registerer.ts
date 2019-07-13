@@ -43,8 +43,9 @@ export class RoleRegisterer {
 
       return results.concat(attachResults)
     } catch (err) {
+      console.error(err)
       return NG('Failed to create Role: %1 invalid JSON where %2', [
-        name,
+        roleEntry.name,
         err.message,
       ])
     }

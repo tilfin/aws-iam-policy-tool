@@ -7,15 +7,41 @@ import { main } from '../src/import_policy'
 describe('import_policy on setup stage', () => {
   const inDir = path.resolve(__dirname, './fixtures/setup/policies')
 
-  it('returns true', done => {
-    const writer = writeArray((err, values) => {
-      console.log(values)
-      done(err)
-    })
+  it('succeeds with valid results', async () => {
+    let values: any[]
+    const writer = writeArray((_, vals) => { values = vals })
 
-    main(inDir, {
+    await main(inDir, {
       ENV: 'test',
       ACCOUNT_ID: process.env.ACCOUNT_ID,
     }, { writer })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Created %1',
+      target: 'bar-logs-lambda-test',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Created %1',
+      target: 'baz-dynamodb-items-test',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Created %1',
+      target: 'foo-s3-logs-test',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Created %1',
+      target: 'foo-s3-storage-test',
+      diff: undefined
+    })
   })
 })

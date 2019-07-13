@@ -34,11 +34,47 @@ describe('delete_policy on terminate stage', () => {
     }
   })
 
-  it('returns true', done => {
-    const writer = writeArray((err, values) => {
-      console.log(values)
-      done(err)
+  it('succeeds with valid results', async () => {
+    let values: any[]
+    const writer = writeArray((_, vals) => {
+      values = vals.sort((a, b) => a.target.localeCompare(b.target))
     })
-    main("\-test$", { writer })
+
+    await main("\-test$", { writer })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Deleted %1',
+      target: 'bar-logs-lambda-test',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'NG',
+      message: 'Failed to delete %1 attached on some roles',
+      target: 'baz-dynamodb-items-test',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Deleted %1',
+      target: 'baz-dynamodb-users-test',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Deleted %1',
+      target: 'foo-s3-logs-test',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Deleted %1',
+      target: 'foo-s3-storage-test',
+      diff: undefined
+    })
   })
 })

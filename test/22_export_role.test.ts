@@ -12,11 +12,33 @@ describe('export_role on setup stage', () => {
     await del([`${outDir}/*.json`])
   })
 
-  it('returns true', done => {
-    const writer = writeArray((err, values) => {
-      console.log(values)
-      done(err)
+  it('succeeds with valid results', async () => {
+    let values: any[]
+    const writer = writeArray((_, vals) => {
+      values = vals.sort((a, b) => a.target.localeCompare(b.target))
     })
-    main(outDir, "\-test$", { writer })
+
+    await main(outDir, "\-test$", { writer })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Wrote %1',
+      target: 'bar-lambda-converter-test.json',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Wrote %1',
+      target: 'baz-ecs-api-test.json',
+      diff: undefined
+    })
+
+    assert.deepEqual(values.shift(), {
+      status: 'OK',
+      message: 'Wrote %1',
+      target: 'foo-ec2-admin-test.json',
+      diff: undefined
+    })
   })
 })
