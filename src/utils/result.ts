@@ -1,8 +1,8 @@
-export type Result = {
-  status: string
-  message: string
-  target?: string
-  diff?: any
+export interface Result {
+  status: string;
+  message: string;
+  target?: string;
+  diff?: any;
 }
 
 export function OK(message: string, target?: any, diff?: any): Result {

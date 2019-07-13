@@ -1,15 +1,15 @@
-import {
-  getPolicyArnPrefix,
-  PolicyEntry,
-  PolicyFetcher,
-} from '../aws/policy'
+import { getPolicyArnPrefix, PolicyEntry, PolicyFetcher } from '../aws/policy'
 import { OK, NG, Skip, Result } from '../utils/result'
-import { createPolicy, ArnType, deletePolicyVersion, createPolicyDefaultVersion } from '../aws/operation'
-
+import {
+  createPolicy,
+  ArnType,
+  deletePolicyVersion,
+  createPolicyDefaultVersion,
+} from '../aws/operation'
 
 export class PolicyRegisterer {
-	private _color: boolean;
-	private _overwrite: boolean;
+  private _color: boolean
+  private _overwrite: boolean
   private policyFetcher!: PolicyFetcher
 
   constructor(opts: any = {}) {
@@ -20,7 +20,7 @@ export class PolicyRegisterer {
   async prepare(): Promise<ArnType> {
     const arnPrefix = await getPolicyArnPrefix()
     this.policyFetcher = new PolicyFetcher(arnPrefix)
-    return arnPrefix;
+    return arnPrefix
   }
 
   async register(entry: PolicyEntry): Promise<Result> {
@@ -28,7 +28,7 @@ export class PolicyRegisterer {
     try {
       await createPolicy(entry.toCreatePolicyParams(4))
       return OK('Created %1', name)
-    } catch(err) {
+    } catch (err) {
       if (err.code === 'EntityAlreadyExists') {
         if (this._overwrite) {
           return this.updatePolicyVersion(entry)
@@ -52,7 +52,7 @@ export class PolicyRegisterer {
     } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(name)
 
     if (localDocJson === remotePolicy.documentAsJson()) {
-      return Skip('%1 not changed', name);
+      return Skip('%1 not changed', name)
     } else {
       if (count === 5) {
         await deletePolicyVersion(remotePolicy.arn, deleteVerId)

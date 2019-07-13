@@ -9,8 +9,7 @@ import { promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
 import { PolicyEntry } from './aws/policy'
 import { PolicyValidator } from './logic/policy_validator'
-import { readPolicyFile } from './aws/file_reader';
-
+import { readPolicyFile } from './aws/file_reader'
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {
   const validator = new PolicyValidator(opts)
@@ -20,9 +19,11 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
 
   await promisedLife([
     StreamUtils.readArray(jsonFiles),
-    promisedStream((filePath: string) => readPolicyFile(filePath, varSet, arnPrefix)),
+    promisedStream((filePath: string) =>
+      readPolicyFile(filePath, varSet, arnPrefix)
+    ),
     promisedStream((file: PolicyEntry) => validator.validate(file)),
-    createWriter(opts)
+    createWriter(opts),
   ])
 
   return validator.isValid()

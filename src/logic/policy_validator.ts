@@ -1,13 +1,12 @@
 const jsonDiff = require('json-diff')
 
-import { PolicyEntry, getPolicyArnPrefix, PolicyFetcher } from "../aws/policy"
-import { NG, Result, OK } from "../utils/result"
-import { ArnType } from "../aws/operation"
-
+import { PolicyEntry, getPolicyArnPrefix, PolicyFetcher } from '../aws/policy'
+import { NG, Result, OK } from '../utils/result'
+import { ArnType } from '../aws/operation'
 
 export class PolicyValidator {
-	public _color: boolean
-	public _invalidCnt: number
+  public _color: boolean
+  public _invalidCnt: number
   private policyFetcher!: PolicyFetcher
 
   constructor(opts: any = {}) {
@@ -22,22 +21,26 @@ export class PolicyValidator {
   }
 
   async validate(entry: PolicyEntry): Promise<Result> {
-    const { policyName, document: localDocument } = entry;
+    const { policyName, document: localDocument } = entry
     try {
-      const { currentPolicy: remotePolicy } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(policyName)
+      const {
+        currentPolicy: remotePolicy,
+      } = await this.policyFetcher.getPolicyDefaultWithVersionInfo(policyName)
       if (!remotePolicy) {
         this._invalidCnt++
         return NG('%1 does not exist.', policyName)
       }
 
-      const df = jsonDiff.diffString(remotePolicy.document, localDocument, { color: this._color })
+      const df = jsonDiff.diffString(remotePolicy.document, localDocument, {
+        color: this._color,
+      })
       if (df) {
         this._invalidCnt++
         return NG('%1 is invalid.', policyName, df)
       } else {
         return OK(policyName)
       }
-    } catch(err) {
+    } catch (err) {
       if (err.code === 'NoSuchEntity') {
         return NG('%1 does not exist.', policyName)
       }

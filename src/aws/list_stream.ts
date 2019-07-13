@@ -8,8 +8,8 @@ import { IAM } from 'aws-sdk'
  * incremental fetching target as readable stream
  */
 abstract class ListStream<T> extends Readable {
-	private params: any
-	protected marker: string | undefined
+  private params: any
+  protected marker: string | undefined
 
   /**
    * Contructor
@@ -30,12 +30,12 @@ abstract class ListStream<T> extends Readable {
     this.pause()
 
     this._fetch(params)
-    .then(() => {
-      this.resume()
-    })
-    .catch((err: Error) => {
-      this.emit('error', err)
-    })
+      .then(() => {
+        this.resume()
+      })
+      .catch((err: Error) => {
+        this.emit('error', err)
+      })
   }
 
   abstract async _fetch(params: any): Promise<void>

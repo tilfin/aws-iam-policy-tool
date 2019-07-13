@@ -9,8 +9,7 @@ import { createWriter } from './utils/result_writer'
 import { RoleEntry } from './aws/role'
 import { listJsonFiles } from './utils/file'
 import { RoleRegisterer } from './logic/role_registerer'
-import { readRoleFile } from './aws/file_reader';
-
+import { readRoleFile } from './aws/file_reader'
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {
   const registerer = new RoleRegisterer(opts)
@@ -22,9 +21,9 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
       StreamUtils.readArray(jsonFiles),
       promisedStream((filePath: string) => readRoleFile(filePath, varSet)),
       promisedStream((file: RoleEntry) => registerer.register(file)),
-      createWriter(opts)
+      createWriter(opts),
     ])
-  } catch(err) {
+  } catch (err) {
     console.error(err.stack)
     return false
   }

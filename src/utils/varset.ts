@@ -1,5 +1,9 @@
 export function substitute(srcStr: string, varSet: any) {
-  return srcStr.replace(/\$?([A-Z][A-Z0-9_]+|\$\{([^\}]+)\})/g, function(match, p1, p2) {
+  return srcStr.replace(/\$?([A-Z][A-Z0-9_]+|\$\{([^\}]+)\})/g, function(
+    match,
+    p1,
+    p2
+  ) {
     const name = p2 || p1
     if (name.startsWith('AWS')) {
       return p1

@@ -1,13 +1,16 @@
 import { IAM } from 'aws-sdk'
-import { getAttachedPoliciesByRole } from './operation';
+import { getAttachedPoliciesByRole } from './operation'
 
-export type RolePolicyPair = {
-  RoleName: string
-  PolicyArn: string
-  PolicyName?: string
+export interface RolePolicyPair {
+  RoleName: string;
+  PolicyArn: string;
+  PolicyName?: string;
 }
 
-export async function diffAttachedPolicies(roleName: string, newPolicies: IAM.AttachedPolicy[]) {
+export async function diffAttachedPolicies(
+  roleName: string,
+  newPolicies: IAM.AttachedPolicy[]
+) {
   const currentPolicies = await getAttachedPoliciesByRole(roleName)
 
   const unchangedPolicies: RolePolicyPair[] = []
@@ -27,7 +30,7 @@ export async function diffAttachedPolicies(roleName: string, newPolicies: IAM.At
     }
   })
 
-  const attachingPolicies: RolePolicyPair[] = [];
+  const attachingPolicies: RolePolicyPair[] = []
   newPolicies.forEach(policy => {
     if (!containPolicy(unchangedPolicies, policy)) {
       attachingPolicies.push({
@@ -40,11 +43,14 @@ export async function diffAttachedPolicies(roleName: string, newPolicies: IAM.At
   return {
     attaching: attachingPolicies,
     detaching: detachingPolicies,
-    unchanged: unchangedPolicies
+    unchanged: unchangedPolicies,
   }
 }
 
-export function containPolicy(target: any[], expected: IAM.AttachedPolicy): boolean {
+export function containPolicy(
+  target: any[],
+  expected: IAM.AttachedPolicy
+): boolean {
   for (let item of target) {
     if (item.PolicyArn === expected.PolicyArn) return true
   }

@@ -1,43 +1,48 @@
 import { IAM } from 'aws-sdk'
 import { iam } from './iam'
-import { ArnType, DocJson, listPolicyVersions, getPolicyVersion } from './operation';
+import {
+  ArnType,
+  DocJson,
+  listPolicyVersions,
+  getPolicyVersion,
+} from './operation'
 
 export interface PolicyStatementNode {
-  Sid: string
-  Effect: string
-  Action: any
-  Resource: any
+  Sid: string;
+  Effect: string;
+  Action: any;
+  Resource: any;
 }
 
-export type PolicyDocumentNode = {
-  Version: string
-  Statement: PolicyStatementNode[]
+export interface PolicyDocumentNode {
+  Version: string;
+  Statement: PolicyStatementNode[];
 }
 
-export type PolicyNode = {
-  PolicyName: string
-  Path?: string
+export interface PolicyNode {
+  PolicyName: string;
+  Path?: string;
 }
 
 export class PolicyEntry {
-  arn: ArnType;
-  policyNode: PolicyNode;
-  document: PolicyDocumentNode;
+  arn: ArnType
+  policyNode: PolicyNode
+  document: PolicyDocumentNode
 
   constructor(arn: ArnType, document: PolicyDocumentNode) {
-    this.arn = arn;
-    const arnParts = arn.split('/');
+    this.arn = arn
+    const arnParts = arn.split('/')
     this.policyNode = {
       PolicyName: arnParts[arnParts.length - 1],
       Path: arnParts.length === 3 ? arnParts[1] : undefined,
-    };
-    this.document = document;
+    }
+    this.document = document
   }
 
   get policyName(): string {
     return this.policyNode.PolicyName
   }
-  
+
   documentAsJson(): DocJson {
     return this.convertDocToJSON(this.document, 4)
   }
@@ -49,20 +54,20 @@ export class PolicyEntry {
       PolicyDocument: this.convertDocToJSON(this.document, indent),
     }
   }
-  
+
   private convertDocToJSON(doc: object, indent: number = 4): DocJson {
     return JSON.stringify(doc, null, indent)
   }
 }
 
-export type PolicyVersionsInfo = {
-  defaultId: string
-  oldestId: string
-  count: number
+export interface PolicyVersionsInfo {
+  defaultId: string;
+  oldestId: string;
+  count: number;
 }
 
-export type GetPolicyDefaultWithVersionInfoResult = {
-  currentPolicy: PolicyEntry
+export interface GetPolicyDefaultWithVersionInfoResult {
+  currentPolicy: PolicyEntry;
 }
 
 export class PolicyFetcher {
@@ -72,7 +77,9 @@ export class PolicyFetcher {
     this.arnPrefix = arnPrefix
   }
 
-  async getPolicyDefaultWithVersionInfo(name: string): Promise<GetPolicyDefaultWithVersionInfoResult & PolicyVersionsInfo> {
+  async getPolicyDefaultWithVersionInfo(
+    name: string
+  ): Promise<GetPolicyDefaultWithVersionInfoResult & PolicyVersionsInfo> {
     const arn = `${this.arnPrefix!}/${name}`
 
     const versions = await listPolicyVersions(arn)
@@ -80,26 +87,35 @@ export class PolicyFetcher {
       throw new Error('Failed to get policy versions')
     }
 
-    const { defaultId, oldestId, count } = this.getPolicyVersionsInfoFrom(versions)
+    const { defaultId, oldestId, count } = this.getPolicyVersionsInfoFrom(
+      versions
+    )
 
     return {
       defaultId,
       oldestId,
       count,
-      currentPolicy: await this.getPolicyVersion(arn, defaultId)
+      currentPolicy: await this.getPolicyVersion(arn, defaultId),
     }
   }
 
-  async getPolicyVersion(policyArn: string, verionId: string): Promise<PolicyEntry> {
+  async getPolicyVersion(
+    policyArn: string,
+    verionId: string
+  ): Promise<PolicyEntry> {
     const result = await getPolicyVersion(policyArn, verionId)
-    const docNode: PolicyDocumentNode = JSON.parse(decodeURIComponent(result.Document!))
+    const docNode: PolicyDocumentNode = JSON.parse(
+      decodeURIComponent(result.Document!)
+    )
 
     return new PolicyEntry(policyArn, docNode)
   }
 
-  private getPolicyVersionsInfoFrom(versions: IAM.PolicyVersion[]): PolicyVersionsInfo {
-    let defaultId: string = ''
-    let oldestId: string = ''
+  private getPolicyVersionsInfoFrom(
+    versions: IAM.PolicyVersion[]
+  ): PolicyVersionsInfo {
+    let defaultId = ''
+    let oldestId = ''
     let createDate = new Date('2099-12-31T00:00:00.000Z')
 
     versions.forEach((ver: IAM.PolicyVersion) => {
@@ -122,11 +138,11 @@ export class PolicyFetcher {
   }
 }
 
-let _policyArnPrefix: string | null = null;
+let _policyArnPrefix: string | null = null
 
 export async function getPolicyArnPrefix(): Promise<string> {
   if (_policyArnPrefix) {
-  	return _policyArnPrefix!
+    return _policyArnPrefix!
   }
 
   const params = {

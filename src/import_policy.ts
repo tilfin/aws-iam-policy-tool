@@ -9,8 +9,7 @@ import { createWriter } from './utils/result_writer'
 import { PolicyEntry } from './aws/policy'
 import { PolicyRegisterer } from './logic/policy_registerer'
 import { listJsonFiles } from './utils/file'
-import { readPolicyFile } from './aws/file_reader';
-
+import { readPolicyFile } from './aws/file_reader'
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {
   const registerer = new PolicyRegisterer(opts)
@@ -21,11 +20,13 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
 
     return promisedLife([
       StreamUtils.readArray(jsonFiles),
-      promisedStream((filePath: string) => readPolicyFile(filePath, varSet, arnPrefix)),
+      promisedStream((filePath: string) =>
+        readPolicyFile(filePath, varSet, arnPrefix)
+      ),
       promisedStream((file: PolicyEntry) => registerer.register(file)),
-      createWriter(opts)
+      createWriter(opts),
     ])
-  } catch(err) {
+  } catch (err) {
     console.error(err.stack)
     return false
   }

@@ -1,15 +1,17 @@
 const jsonDiff = require('json-diff')
 
-import { RoleNode, RoleEntry } from "../aws/role"
-import { containPolicy } from "../aws/attach"
+import { RoleNode, RoleEntry } from '../aws/role'
+import { containPolicy } from '../aws/attach'
 import { OK, NG, Result } from '../utils/result'
-import { IAM } from "aws-sdk"
-import { getAttachedPoliciesByRole, getInstanceProfile } from "../aws/operation";
-
+import { IAM } from 'aws-sdk'
+import {
+  getAttachedPoliciesByRole,
+  getInstanceProfile,
+} from '../aws/operation'
 
 export class InvalidRoleError extends Error {
-	public target: any;
-	public diff: any;
+  public target: any
+  public diff: any
 
   constructor(msg: string, target: string, diff?: any) {
     super(msg)
@@ -19,8 +21,8 @@ export class InvalidRoleError extends Error {
 }
 
 export class RoleValidator {
-	private _color: boolean;
-	private _invalidCnt: number;
+  private _color: boolean
+  private _invalidCnt: number
 
   constructor(opts: any = {}) {
     this._color = !(opts['plain'] || false)
@@ -34,11 +36,14 @@ export class RoleValidator {
 
       await this._validateRoleOrRoleWithInstanceProfile(roleEntry.Role)
 
-      let results: Result[] | null = await this._validateAttachedPolicies(roleName, roleEntry.AttachedPolicies)
+      let results: Result[] | null = await this._validateAttachedPolicies(
+        roleName,
+        roleEntry.AttachedPolicies
+      )
       if (results) return results
 
       return [OK(roleName)]
-    } catch(err) {
+    } catch (err) {
       if (err instanceof InvalidRoleError) {
         this._invalidCnt++
         return [NG(err.message, err.target, err.diff)]
@@ -48,17 +53,26 @@ export class RoleValidator {
   }
 
   async _validateRoleOrRoleWithInstanceProfile(definedRole: RoleNode) {
-    const roleName = definedRole.RoleName;
+    const roleName = definedRole.RoleName
 
     let currentRole: RoleNode
     if (definedRole.isEc2Role) {
       const profile = await getInstanceProfile(roleName)
       if (!profile) {
-        throw new InvalidRoleError('%1 instance profile does not exist.', roleName)
+        throw new InvalidRoleError(
+          '%1 instance profile does not exist.',
+          roleName
+        )
       }
 
       const { RoleName, Path, AssumeRolePolicyDocument } = profile.Roles[0]
-      currentRole = new RoleNode(RoleName, Path, AssumeRolePolicyDocument ? JSON.parse(decodeURIComponent(AssumeRolePolicyDocument!)) : undefined)
+      currentRole = new RoleNode(
+        RoleName,
+        Path,
+        AssumeRolePolicyDocument
+          ? JSON.parse(decodeURIComponent(AssumeRolePolicyDocument!))
+          : undefined
+      )
     } else {
       const gotRole = await RoleNode.findRole(roleName)
       if (!gotRole) {
@@ -75,22 +89,33 @@ export class RoleValidator {
     }
   }
 
-  async _validateAttachedPolicies(roleName: string, attachedPolicies: IAM.AttachedPolicy[]): Promise<Result[] | null> {
+  async _validateAttachedPolicies(
+    roleName: string,
+    attachedPolicies: IAM.AttachedPolicy[]
+  ): Promise<Result[] | null> {
     const currentPolicies = await getAttachedPoliciesByRole(roleName)
     const results: Result[] = []
     const definedPolicies = attachedPolicies
 
     definedPolicies.forEach((definedPolicy: IAM.AttachedPolicy) => {
       if (!containPolicy(currentPolicies, definedPolicy)) {
-        results.push(NG('Role: %1 does not have Policy: %2.',
-                                [roleName, definedPolicy.PolicyName]))
+        results.push(
+          NG('Role: %1 does not have Policy: %2.', [
+            roleName,
+            definedPolicy.PolicyName,
+          ])
+        )
       }
     })
 
     currentPolicies.forEach((currentPolicy: IAM.AttachedPolicy) => {
       if (!containPolicy(definedPolicies, currentPolicy)) {
-        results.push(NG('Role: %1 have Policy: %2 not required.',
-                                [roleName, currentPolicy.PolicyName]))
+        results.push(
+          NG('Role: %1 have Policy: %2 not required.', [
+            roleName,
+            currentPolicy.PolicyName,
+          ])
+        )
       }
     })
 

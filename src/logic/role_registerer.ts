@@ -1,15 +1,14 @@
 'use strict'
 
-import { RoleEntry, RoleDocument, RoleNode } from "../aws/role"
+import { RoleEntry, RoleDocument, RoleNode } from '../aws/role'
 import { iam } from '../aws/iam'
 import { Result, OK, NG, Skip } from '../utils/result'
-import { IAM } from "aws-sdk";
-import { RolePolicyPair, diffAttachedPolicies } from "../aws/attach"
-import { createRole } from "../aws/operation";
-
+import { IAM } from 'aws-sdk'
+import { RolePolicyPair, diffAttachedPolicies } from '../aws/attach'
+import { createRole } from '../aws/operation'
 
 export class RoleRegisterer {
-	private _overwrite: boolean;
+  private _overwrite: boolean
 
   constructor(opts: any = {}) {
     this._overwrite = opts['overwrite'] || false
@@ -22,22 +21,39 @@ export class RoleRegisterer {
       const rolePolicies = await this._getRolePolicies(roleEntry)
 
       const attachPromises: Promise<Result>[] = []
-      const attachResults: Result[] = await Promise.all(attachPromises.concat(
-        rolePolicies.attaching.map((entry: RolePolicyPair) => this._attachRolePolicy(entry)),
-        rolePolicies.detaching.map((entry: RolePolicyPair) => this._detachRolePolicy(entry)),
-        rolePolicies.unchanged.map((entry: RolePolicyPair) => {
-          const policyName = onlyPolicyName(entry.PolicyArn)
-          return Promise.resolve(Skip('Policy: %1 is already attached on Role: %2', [policyName, entry.RoleName]))
-        })
-      ))
+      const attachResults: Result[] = await Promise.all(
+        attachPromises.concat(
+          rolePolicies.attaching.map((entry: RolePolicyPair) =>
+            this._attachRolePolicy(entry)
+          ),
+          rolePolicies.detaching.map((entry: RolePolicyPair) =>
+            this._detachRolePolicy(entry)
+          ),
+          rolePolicies.unchanged.map((entry: RolePolicyPair) => {
+            const policyName = onlyPolicyName(entry.PolicyArn)
+            return Promise.resolve(
+              Skip('Policy: %1 is already attached on Role: %2', [
+                policyName,
+                entry.RoleName,
+              ])
+            )
+          })
+        )
+      )
 
       return results.concat(attachResults)
-    } catch(err) {
-      return NG('Failed to create Role: %1 invalid JSON where %2', [name, err.message])
+    } catch (err) {
+      return NG('Failed to create Role: %1 invalid JSON where %2', [
+        name,
+        err.message,
+      ])
     }
   }
 
-  async _createRoleOrWithInstanceProfile(roleEntry: RoleEntry, results: Result[]) {
+  async _createRoleOrWithInstanceProfile(
+    roleEntry: RoleEntry,
+    results: Result[]
+  ) {
     const roleName = roleEntry.Role.RoleName
     const createdRole = await this._createRole(roleEntry.Role, results)
     if (createdRole && roleEntry.Role.isEc2Role) {
@@ -49,7 +65,10 @@ export class RoleRegisterer {
     return createdRole
   }
 
-  async _createRole(roleNode: RoleNode, results: Result[]): Promise<RoleNode | Result | null> {
+  async _createRole(
+    roleNode: RoleNode,
+    results: Result[]
+  ): Promise<RoleNode | Result | null> {
     const roleName = roleNode.RoleName
 
     if (roleNode.Path.startsWith('/aws-service-role/')) {
@@ -61,12 +80,15 @@ export class RoleRegisterer {
       const role = await createRole(roleNode.toCreateRoleParams())
       results.push(OK('Created Role: %1', roleName))
       return roleNode
-    } catch(err) {
+    } catch (err) {
       if (err.code === 'EntityAlreadyExists') {
         results.push(Skip('Role: %1 already exists.', roleName))
         return null
       } else if (err.code === 'MalformedPolicyDocument') {
-        return NG('Failed to create Role: %1 invalid JSON where %2', [roleName, err.message])
+        return NG('Failed to create Role: %1 invalid JSON where %2', [
+          roleName,
+          err.message,
+        ])
       }
       results.push(NG('Failed to create Role: %1', roleName))
       throw err
@@ -75,14 +97,14 @@ export class RoleRegisterer {
 
   async _createInstanceProfile(roleName: string, results: Result[]) {
     const params = {
-      InstanceProfileName: roleName
+      InstanceProfileName: roleName,
     }
 
     try {
       const data = await iam.createInstanceProfile(params).promise()
       results.push(OK('Created InstanceProfile: %1', roleName))
       return data.InstanceProfile
-    } catch(err) {
+    } catch (err) {
       if (err.code === 'EntityAlreadyExists') {
         results.push(Skip('InstanceProfile: %1 already exists.', roleName))
         return null
@@ -92,16 +114,22 @@ export class RoleRegisterer {
     }
   }
 
-  async _addRoleToInstanceProfile(profileName: string, roleName: string, results: Result[]) {
+  async _addRoleToInstanceProfile(
+    profileName: string,
+    roleName: string,
+    results: Result[]
+  ) {
     const params = {
       InstanceProfileName: profileName,
-      RoleName: roleName
+      RoleName: roleName,
     }
 
     try {
       iam.addRoleToInstanceProfile(params).promise()
-      results.push(OK('Added InstanceProfile: %1 to Role: %2', [profileName, roleName]))
-    } catch(err) {
+      results.push(
+        OK('Added InstanceProfile: %1 to Role: %2', [profileName, roleName])
+      )
+    } catch (err) {
       /*if (err.code === 'LimitExceeded') {
         console.log(Status.Skip, err.message)
         return
@@ -128,9 +156,12 @@ export class RoleRegisterer {
     try {
       await iam.attachRolePolicy(params).promise()
       return OK('Attached %1 on %2', [policyName, params.RoleName])
-    } catch(err) {
+    } catch (err) {
       if (err.code === 'NoSuchEntity') {
-        return NG('Could not attach Policy: %1 that does not exist on %2.', [policyName, params.RoleName])
+        return NG('Could not attach Policy: %1 that does not exist on %2.', [
+          policyName,
+          params.RoleName,
+        ])
       }
       throw err
     }
