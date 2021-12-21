@@ -112,7 +112,7 @@ Commands:
   export-policy <dir> <matcher>  export polies to target directory
   export-role <dir> <matcher>    export roles to target directory
   import-policy <dir>            import policies from target directory
-  import-role <dir>              import policies from target directory
+  import-role <dir>              import roles from target directory
   validate-policy <dir>          validate policies with target directory
   validate-role <dir>            validate roles with target directory
   delete-policy <matcher>        delete policies specified regular expression matches
