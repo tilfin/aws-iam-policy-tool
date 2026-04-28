@@ -8,7 +8,7 @@
     "alwaysStrict": true,
     "noUnusedLocals": false,
     "esModuleInterop": true,
-    "types": ["node"]
+    "types": ["node", "@types/mocha"]
   },
   "include": ["./src", "./test"]
 }
