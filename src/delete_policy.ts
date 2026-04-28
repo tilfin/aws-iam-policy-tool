@@ -10,6 +10,7 @@ import { ListPolicyStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
 import { PolicyCleaner } from './logic/policy_cleaner'
+import { asError } from './utils/error'
 
 export async function main(nameMatcher: any, opts: any = {}) {
   const needConfirm = !opts.noconfirm
@@ -55,7 +56,8 @@ export async function main(nameMatcher: any, opts: any = {}) {
       createWriter(opts),
     ])
   } catch (err) {
-    console.error(err.stack)
+    const error = asError(err)
+    console.error(error.stack || error.message || err)
     return false
   }
 }

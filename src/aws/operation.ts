@@ -1,5 +1,6 @@
 import { iam } from './iam'
 import { IAM } from 'aws-sdk'
+import { asError } from '../utils/error'
 
 export type ArnType = string
 export type DocJson = string
@@ -28,7 +29,8 @@ export async function getRole(roleName: string): Promise<IAM.Role | null> {
     const data = await iam.getRole(params).promise()
     return data.Role
   } catch (err) {
-    if (err.code === 'NoSuchEntity') return null
+    const error = asError(err)
+    if (error.code === 'NoSuchEntity') return null
     throw err
   }
 }
@@ -39,7 +41,8 @@ export async function getInstanceProfile(roleName: string) {
     const data = await iam.getInstanceProfile(params).promise()
     return data.InstanceProfile
   } catch (err) {
-    if (err.code === 'NoSuchEntity') return null
+    const error = asError(err)
+    if (error.code === 'NoSuchEntity') return null
     throw err
   }
 }

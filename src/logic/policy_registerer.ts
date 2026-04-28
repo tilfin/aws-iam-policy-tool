@@ -6,6 +6,7 @@ import {
   deletePolicyVersion,
   createPolicyDefaultVersion,
 } from '../aws/operation'
+import { asError } from '../utils/error'
 
 export class PolicyRegisterer {
   private _color: boolean
@@ -29,13 +30,14 @@ export class PolicyRegisterer {
       await createPolicy(entry.toCreatePolicyParams(4))
       return OK('Created %1', name)
     } catch (err) {
-      if (err.code === 'EntityAlreadyExists') {
+      const error = asError(err)
+      if (error.code === 'EntityAlreadyExists') {
         if (this._overwrite) {
           return this.updatePolicyVersion(entry)
         } else {
           return Skip('%1 already exists.', name)
         }
-      } else if (err.code === 'MalformedPolicyDocument') {
+      } else if (error.code === 'MalformedPolicyDocument') {
         return NG('%1 is invalid Policy JSON format.', name)
       }
       throw err

@@ -10,6 +10,7 @@ import { RoleEntry } from './aws/role'
 import { listJsonFiles } from './utils/file'
 import { RoleRegisterer } from './logic/role_registerer'
 import { readRoleFile } from './aws/file_reader'
+import { asError } from './utils/error'
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {
   const registerer = new RoleRegisterer(opts)
@@ -24,7 +25,8 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
       createWriter(opts),
     ])
   } catch (err) {
-    console.error(err.stack)
+    const error = asError(err)
+    console.error(error.stack || error.message || err)
     return false
   }
 }

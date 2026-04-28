@@ -9,8 +9,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test": "ts-mocha test/**/*.test.ts --timeout 20000",
-    "ci_test": "nyc ts-mocha test/**/*.test.ts --timeout 20000",
+    "test": "ts-mocha -p tsconfig.test.json test/**/*.test.ts --timeout 20000",
+    "ci_test": "nyc ts-mocha -p tsconfig.test.json test/**/*.test.ts --timeout 20000",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [

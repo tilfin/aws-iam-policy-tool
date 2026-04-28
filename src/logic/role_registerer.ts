@@ -6,6 +6,7 @@ import { Result, OK, NG, Skip } from '../utils/result'
 import { IAM } from 'aws-sdk'
 import { RolePolicyPair, diffAttachedPolicies } from '../aws/attach'
 import { createRole } from '../aws/operation'
+import { asError } from '../utils/error'
 
 export class RoleRegisterer {
   private _overwrite: boolean
@@ -43,10 +44,11 @@ export class RoleRegisterer {
 
       return results.concat(attachResults)
     } catch (err) {
+      const error = asError(err)
       console.error(err)
       return NG('Failed to create Role: %1 invalid JSON where %2', [
         roleEntry.name,
-        err.message,
+        error.message,
       ])
     }
   }
@@ -82,13 +84,14 @@ export class RoleRegisterer {
       results.push(OK('Created Role: %1', roleName))
       return roleNode
     } catch (err) {
-      if (err.code === 'EntityAlreadyExists') {
+      const error = asError(err)
+      if (error.code === 'EntityAlreadyExists') {
         results.push(Skip('Role: %1 already exists.', roleName))
         return null
-      } else if (err.code === 'MalformedPolicyDocument') {
+      } else if (error.code === 'MalformedPolicyDocument') {
         return NG('Failed to create Role: %1 invalid JSON where %2', [
           roleName,
-          err.message,
+          error.message,
         ])
       }
       results.push(NG('Failed to create Role: %1', roleName))
@@ -106,7 +109,8 @@ export class RoleRegisterer {
       results.push(OK('Created InstanceProfile: %1', roleName))
       return data.InstanceProfile
     } catch (err) {
-      if (err.code === 'EntityAlreadyExists') {
+      const error = asError(err)
+      if (error.code === 'EntityAlreadyExists') {
         results.push(Skip('InstanceProfile: %1 already exists.', roleName))
         return null
       }
@@ -131,8 +135,9 @@ export class RoleRegisterer {
         OK('Added InstanceProfile: %1 to Role: %2', [profileName, roleName])
       )
     } catch (err) {
-      /*if (err.code === 'LimitExceeded') {
-        console.log(Status.Skip, err.message)
+      /* const error = asError(err)
+      if (error.code === 'LimitExceeded') {
+        console.log(Status.Skip, error.message)
         return
       }*/
       throw err
@@ -158,7 +163,8 @@ export class RoleRegisterer {
       await iam.attachRolePolicy(params).promise()
       return OK('Attached %1 on %2', [policyName, params.RoleName])
     } catch (err) {
-      if (err.code === 'NoSuchEntity') {
+      const error = asError(err)
+      if (error.code === 'NoSuchEntity') {
         return NG('Could not attach Policy: %1 that does not exist on %2.', [
           policyName,
           params.RoleName,

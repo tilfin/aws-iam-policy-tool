@@ -10,6 +10,7 @@ import { writeJSONFile } from './utils/file'
 import { ListPolicyStream } from './aws/list_stream'
 import { OK, NG, Result } from './utils/result'
 import { PolicyEntry, PolicyFetcher } from './aws/policy'
+import { asError } from './utils/error'
 
 async function writePolicyFile(
   parentDir: string,
@@ -44,7 +45,8 @@ export async function main(outDir: string, nameMatcher: any, opts: any = {}) {
       createWriter(opts),
     ])
   } catch (err) {
-    console.error(err.stack)
+    const error = asError(err)
+    console.error(error.stack || error.message || err)
     return false
   }
 }
