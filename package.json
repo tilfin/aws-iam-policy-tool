@@ -48,7 +48,7 @@
     "typescript": "^3.5.2"
   },
   "engines": {
-    "node": ">=8.10"
+    "node": ">=22"
   },
   "directories": {
     "example": "example",

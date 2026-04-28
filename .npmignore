@@ -1,4 +1,4 @@
-.travis.yml
+.tool-versions
 .vscode/
 .nyc_output/
 src/
