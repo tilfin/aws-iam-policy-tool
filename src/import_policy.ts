@@ -10,6 +10,7 @@ import { PolicyEntry } from './aws/policy'
 import { PolicyRegisterer } from './logic/policy_registerer'
 import { listJsonFiles } from './utils/file'
 import { readPolicyFile } from './aws/file_reader'
+import { asError } from './utils/error'
 
 export async function main(inDir: string, varSet: any, opts: any = {}) {
   const registerer = new PolicyRegisterer(opts)
@@ -27,7 +28,8 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
       createWriter(opts),
     ])
   } catch (err) {
-    console.error(err.stack)
+    const error = asError(err)
+    console.error(error.stack || error.message || err)
     return false
   }
 }

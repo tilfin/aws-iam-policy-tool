@@ -38,7 +38,7 @@ abstract class ListStream<T> extends Readable {
       })
   }
 
-  abstract async _fetch(params: any): Promise<void>
+  abstract _fetch(params: any): Promise<void>
 }
 
 export class ListRoleStream extends ListStream<IAM.Role> {

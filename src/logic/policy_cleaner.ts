@@ -2,6 +2,7 @@ import { IAM } from 'aws-sdk'
 import { OK, NG, Skip, Result } from '../utils/result'
 import { listPolicyVersions } from '../aws/operation'
 import { iam } from '../aws/iam'
+import { asError } from '../utils/error'
 
 export class PolicyCleaner {
   constructor(opts: any = {}) {
@@ -24,7 +25,8 @@ export class PolicyCleaner {
 
       return results
     } catch (err) {
-      if (err.code === 'DeleteConflict') {
+      const error = asError(err)
+      if (error.code === 'DeleteConflict') {
         results.push(NG(
           'Failed to delete %1 attached on some roles',
           policy.PolicyName!

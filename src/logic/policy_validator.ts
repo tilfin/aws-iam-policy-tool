@@ -3,6 +3,7 @@ const jsonDiff = require('json-diff')
 import { PolicyEntry, getPolicyArnPrefix, PolicyFetcher } from '../aws/policy'
 import { NG, Result, OK } from '../utils/result'
 import { ArnType } from '../aws/operation'
+import { asError } from '../utils/error'
 
 export class PolicyValidator {
   public _color: boolean
@@ -41,7 +42,8 @@ export class PolicyValidator {
         return OK(policyName)
       }
     } catch (err) {
-      if (err.code === 'NoSuchEntity') {
+      const error = asError(err)
+      if (error.code === 'NoSuchEntity') {
         return NG('%1 does not exist.', policyName)
       }
       throw err

@@ -1,9 +1,0 @@
-.tool-versions
-.vscode/
-.nyc_output/
-src/
-test/
-example/
-coverage/
-tsconfig.json
-out*
