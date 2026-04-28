@@ -9,9 +9,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test": "ts-mocha -p tsconfig.test.json test/**/*.test.ts --timeout 60000",
-    "ci_test": "nyc ts-mocha -p tsconfig.test.json test/**/*.test.ts --timeout 60000",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "test": "ts-mocha -p tsconfig.test.json test/**/*.test.ts --timeout 60000"
   },
   "keywords": [
     "AWS",
@@ -22,20 +20,18 @@
   "dependencies": {
     "@aws-sdk/client-iam": "^3.1037.0",
     "@tilfin/stream-utils": "^0.7.0",
-    "@types/chai": "^5.2.3",
-    "@types/mocha": "^10.0.10",
     "commander": "^2.20.0",
     "json-diff": "^0.5.4",
     "promised-lifestream": "^0.7.0"
   },
   "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^25.6.0",
     "chai": "^6.2.2",
-    "coveralls": "^3.0.5",
     "del": "^4.1.1",
     "glob": "^7.1.4",
     "mocha": "^11.7.5",
-    "nyc": "^14.1.1",
     "ts-mocha": "^11.1.0",
     "typescript": "^6.0.3"
   },
@@ -53,20 +49,5 @@
   "bugs": {
     "url": "https://github.com/tilfin/aws-iam-policy-tool/issues"
   },
-  "homepage": "https://github.com/tilfin/aws-iam-policy-tool#readme",
-  "nyc": {
-    "include": [
-      "src/**/*.ts"
-    ],
-    "extension": [
-      ".ts"
-    ],
-    "reporter": [
-      "json",
-      "html",
-      "text"
-    ],
-    "sourceMap": true,
-    "all": true
-  }
+  "homepage": "https://github.com/tilfin/aws-iam-policy-tool#readme"
 }
