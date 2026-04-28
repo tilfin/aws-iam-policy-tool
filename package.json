@@ -1,6 +1,6 @@
 {
   "name": "aws-iam-policy-tool",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "AWS IAM role/policy management cli tool",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -42,11 +42,10 @@
   "engines": {
     "node": ">=22"
   },
-  "directories": {
-    "example": "example",
-    "lib": "lib",
-    "test": "test"
-  },
+  "files": [
+    "bin",
+    "lib"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tilfin/aws-iam-policy-tool.git"
