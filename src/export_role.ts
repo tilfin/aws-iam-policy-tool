@@ -1,10 +1,13 @@
 /**
  * export IAM roles to JSON files
  */
-const promisedLife = require('promised-lifestream')
-
+import { pipeline } from 'stream/promises';
 import { iam } from './aws/iam'
-import { IAM } from 'aws-sdk'
+import {
+  AttachedPolicy,
+  ListAttachedRolePoliciesCommand,
+  Role,
+} from '@aws-sdk/client-iam'
 import { RoleDocument } from './aws/role'
 import { ListRoleStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
@@ -13,15 +16,15 @@ import { OK, NG } from './utils/result'
 import { writeJSONFile } from './utils/file'
 
 interface ListRolePoliciesResult {
-  Role: IAM.Role;
-  AttachedPolicies: IAM.AttachedPolicy[];
+  Role: Role;
+  AttachedPolicies: AttachedPolicy[];
 }
 
 async function listRolePolicies(
-  role: IAM.Role
+  role: Role
 ): Promise<ListRolePoliciesResult> {
   const params = { RoleName: role.RoleName }
-  const data = await iam.listAttachedRolePolicies(params).promise()
+  const data = await iam.send(new ListAttachedRolePoliciesCommand(params))
   return {
     Role: role,
     AttachedPolicies: data.AttachedPolicies!,
@@ -51,12 +54,12 @@ async function writeRoleFile(parentDir: string, item: ListRolePoliciesResult) {
 }
 
 export async function main(outDir: string, nameMatcher: any, opts = {}) {
-  return promisedLife([
+  return await pipeline([
     new ListRoleStream(),
-    filterStream((role: IAM.Role) => {
-      return !nameMatcher || role.RoleName.match(nameMatcher)
+    filterStream((role: Role) => {
+      return !nameMatcher || role.RoleName!.match(nameMatcher)
     }),
-    promisedStream((role: IAM.Role) => listRolePolicies(role)),
+    promisedStream((role: Role) => listRolePolicies(role)),
     promisedStream((item: ListRolePoliciesResult) =>
       writeRoleFile(outDir, item)
     ),

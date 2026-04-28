@@ -1,6 +1,11 @@
 import { Readable } from 'stream'
 import { iam } from './iam'
-import { IAM } from 'aws-sdk'
+import {
+  ListPoliciesCommand,
+  ListRolesCommand,
+  Policy,
+  Role,
+} from '@aws-sdk/client-iam'
 
 /**
  * ListStream
@@ -41,10 +46,10 @@ abstract class ListStream<T> extends Readable {
   abstract _fetch(params: any): Promise<void>
 }
 
-export class ListRoleStream extends ListStream<IAM.Role> {
+export class ListRoleStream extends ListStream<Role> {
   async _fetch(params: any): Promise<void> {
-    const data = await iam.listRoles(params).promise()
-    data.Roles.forEach((item: IAM.Role) => this.push(item))
+    const data = await iam.send(new ListRolesCommand(params))
+    data.Roles?.forEach((item: Role) => this.push(item))
 
     if (data.IsTruncated) {
       this.marker = data.Marker
@@ -55,10 +60,10 @@ export class ListRoleStream extends ListStream<IAM.Role> {
   }
 }
 
-export class ListPolicyStream extends ListStream<IAM.Policy> {
+export class ListPolicyStream extends ListStream<Policy> {
   async _fetch(params: any): Promise<void> {
-    const data = await iam.listPolicies(params).promise()
-    data.Policies!.forEach((item: IAM.Policy) => this.push(item))
+    const data = await iam.send(new ListPoliciesCommand(params))
+    data.Policies?.forEach((item: Policy) => this.push(item))
 
     if (data.IsTruncated) {
       this.marker = data.Marker

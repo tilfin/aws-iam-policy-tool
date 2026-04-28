@@ -1,11 +1,12 @@
 /**
  * delete matched IAM polices
  */
+import { pipeline } from 'stream/promises';
 const StreamUtils = require('@tilfin/stream-utils')
 const promisedLife = require('promised-lifestream')
 
 import prompt from './utils/prompt'
-import { IAM } from 'aws-sdk'
+import { Policy } from '@aws-sdk/client-iam'
 import { ListPolicyStream } from './aws/list_stream'
 import { filterStream, promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
@@ -22,7 +23,7 @@ export async function main(nameMatcher: any, opts: any = {}) {
           OnlyAttached: false,
           Scope: 'Local',
         }),
-        filterStream((policy: IAM.Policy) => {
+        filterStream((policy: Policy) => {
           if (policy.PolicyName!.match(nameMatcher)) {
             if (needConfirm) console.info(policy.Arn)
             return true
@@ -50,9 +51,9 @@ export async function main(nameMatcher: any, opts: any = {}) {
 
     const policyCleaner = new PolicyCleaner()
 
-    return promisedLife([
+    return await pipeline([
       StreamUtils.readArray(policies),
-      promisedStream((policy: IAM.Policy) => policyCleaner.delete(policy)),
+      promisedStream((policy: Policy) => policyCleaner.delete(policy)),
       createWriter(opts),
     ])
   } catch (err) {

@@ -1,4 +1,10 @@
-import { IAM } from 'aws-sdk'
+import {
+  CreatePolicyCommandInput,
+  ListPoliciesCommandInput,
+  ListPoliciesCommand,
+  Policy,
+  PolicyVersion,
+} from '@aws-sdk/client-iam'
 import { iam } from './iam'
 import {
   ArnType,
@@ -51,7 +57,7 @@ export class PolicyEntry {
     return this.convertDocToJSON(this.document, 4)
   }
 
-  toCreatePolicyParams(indent: number): IAM.CreatePolicyRequest {
+  toCreatePolicyParams(indent: number): CreatePolicyCommandInput {
     return {
       PolicyName: this.policyNode.PolicyName,
       Path: this.policyNode.Path,
@@ -120,13 +126,13 @@ export class PolicyFetcher {
   }
 
   private getPolicyVersionsInfoFrom(
-    versions: IAM.PolicyVersion[]
+    versions: PolicyVersion[]
   ): PolicyVersionsInfo {
     let defaultId = ''
     let oldestId = ''
     let createDate = new Date('2099-12-31T00:00:00.000Z')
 
-    versions.forEach((ver: IAM.PolicyVersion) => {
+    versions.forEach((ver: PolicyVersion) => {
       if (ver.IsDefaultVersion) {
         defaultId = ver.VersionId!
       } else {
@@ -153,12 +159,12 @@ export async function getPolicyArnPrefix(): Promise<string> {
     return _policyArnPrefix!
   }
 
-  const params = {
+  const params: ListPoliciesCommandInput = {
     Scope: 'Local',
     MaxItems: 1,
   }
 
-  const data = await iam.listPolicies(params).promise()
+  const data = await iam.send(new ListPoliciesCommand(params))
   const policies = data.Policies!
   if (policies.length) {
     _policyArnPrefix = policies[0].Arn!.split('/')[0]

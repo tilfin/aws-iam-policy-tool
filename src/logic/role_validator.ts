@@ -3,7 +3,7 @@ const jsonDiff = require('json-diff')
 import { RoleNode, RoleEntry } from '../aws/role'
 import { containPolicy } from '../aws/attach'
 import { OK, NG, Result } from '../utils/result'
-import { IAM } from 'aws-sdk'
+import { AttachedPolicy } from '@aws-sdk/client-iam'
 import {
   getAttachedPoliciesByRole,
   getInstanceProfile,
@@ -72,11 +72,17 @@ export class RoleValidator {
           roleName
         )
       }
+      if (!profile.Roles || profile.Roles.length === 0) {
+        throw new InvalidRoleError(
+          '%1 instance profile has no roles.',
+          roleName
+        )
+      }
 
       const { RoleName, Path, AssumeRolePolicyDocument } = profile.Roles[0]
       return new RoleNode(
-        RoleName,
-        Path,
+        RoleName!,
+        Path || '/',
         AssumeRolePolicyDocument
           ? JSON.parse(decodeURIComponent(AssumeRolePolicyDocument!))
           : undefined
@@ -92,13 +98,13 @@ export class RoleValidator {
 
   private async _validatePolicies(
     roleName: string,
-    attachedPolicies: IAM.AttachedPolicy[]
+    attachedPolicies: AttachedPolicy[]
   ): Promise<Result[]> {
     const currentPolicies = await getAttachedPoliciesByRole(roleName)
     const results: Result[] = []
     const definedPolicies = attachedPolicies
 
-    definedPolicies.forEach((definedPolicy: IAM.AttachedPolicy) => {
+    definedPolicies.forEach((definedPolicy: AttachedPolicy) => {
       if (!containPolicy(currentPolicies, definedPolicy)) {
         results.push(
           NG('Role: %1 does not have Policy: %2.', [
@@ -109,7 +115,7 @@ export class RoleValidator {
       }
     })
 
-    currentPolicies.forEach((currentPolicy: IAM.AttachedPolicy) => {
+    currentPolicies.forEach((currentPolicy: AttachedPolicy) => {
       if (!containPolicy(definedPolicies, currentPolicy)) {
         results.push(
           NG('Role: %1 have Policy: %2 not required.', [

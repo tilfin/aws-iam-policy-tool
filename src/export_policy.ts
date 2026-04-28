@@ -1,9 +1,8 @@
 /**
  * export IAM polices to JSON files
  */
-const promisedLife = require('promised-lifestream')
-
-import { IAM } from 'aws-sdk'
+import { pipeline } from 'stream/promises';
+import { Policy } from '@aws-sdk/client-iam'
 import { filterStream, promisedStream } from './utils/stream'
 import { createWriter } from './utils/result_writer'
 import { writeJSONFile } from './utils/file'
@@ -30,15 +29,15 @@ export async function main(outDir: string, nameMatcher: any, opts: any = {}) {
   const policyFetcher = new PolicyFetcher()
 
   try {
-    return await promisedLife([
+    return await pipeline([
       new ListPolicyStream({
         OnlyAttached: false,
         Scope: 'Local',
       }),
-      filterStream((policy: IAM.Policy) => {
+      filterStream((policy: Policy) => {
         return !nameMatcher || policy.PolicyName!.match(nameMatcher)
       }),
-      promisedStream((policy: IAM.Policy) =>
+      promisedStream((policy: Policy) =>
         policyFetcher.getPolicyEntry(policy.Arn!, policy.DefaultVersionId!)
       ),
       promisedStream((entry: PolicyEntry) => writePolicyFile(outDir, entry)),

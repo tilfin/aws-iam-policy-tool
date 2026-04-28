@@ -1,7 +1,7 @@
 /**
  * import IAM polices from JSON files
  */
-const promisedLife = require('promised-lifestream')
+import { pipeline } from 'stream/promises'
 const StreamUtils = require('@tilfin/stream-utils')
 
 import { promisedStream } from './utils/stream'
@@ -19,7 +19,7 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
 
     const jsonFiles = await listJsonFiles(inDir)
 
-    return promisedLife([
+    return await pipeline([
       StreamUtils.readArray(jsonFiles),
       promisedStream((filePath: string) =>
         readPolicyFile(filePath, varSet, arnPrefix)
