@@ -1,4 +1,4 @@
-import { IAM } from 'aws-sdk'
+import { AttachedPolicy, CreateRoleCommandInput, Role } from '@aws-sdk/client-iam'
 import { getRole } from './operation'
 
 export interface StatementNode {
@@ -48,7 +48,7 @@ export class RoleNode implements IRoleNode {
     }
   }
 
-  toCreateRoleParams(): IAM.CreateRoleRequest {
+  toCreateRoleParams(): CreateRoleCommandInput {
     return {
       RoleName: this.RoleName,
       Path: this.Path,
@@ -65,10 +65,10 @@ export class RoleNode implements IRoleNode {
     return this.fromIAMRole(role!)
   }
 
-  static fromIAMRole(role: IAM.Role) {
+  static fromIAMRole(role: Role) {
     return new RoleNode(
-      role.RoleName,
-      role.Path,
+      role.RoleName!,
+      role.Path || '/',
       role.AssumeRolePolicyDocument
         ? JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument!))
         : undefined
@@ -78,13 +78,13 @@ export class RoleNode implements IRoleNode {
 
 export interface RoleDocument {
   Role: IRoleNode;
-  AttachedPolicies: IAM.AttachedPolicy[];
+  AttachedPolicies: AttachedPolicy[];
 }
 
 export class RoleEntry {
   name: string
   Role: RoleNode
-  AttachedPolicies: IAM.AttachedPolicy[]
+  AttachedPolicies: AttachedPolicy[]
 
   constructor(name: string, document: RoleDocument) {
     this.name = name

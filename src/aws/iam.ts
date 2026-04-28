@@ -1,10 +1,9 @@
-import AWS from 'aws-sdk'
+import { IAMClient, IAMClientConfig } from '@aws-sdk/client-iam'
 
-const params: AWS.IAM.ClientConfiguration = {}
+const params: IAMClientConfig = {}
 if (process.env.NODE_ENV === 'test') {
-  require('extend-aws-error')(AWS)
   params.region = 'us-east-1'
   params.endpoint = 'http://localhost:4593'
 }
 
-export const iam: AWS.IAM = new AWS.IAM(params)
+export const iam = new IAMClient(params)

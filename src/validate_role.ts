@@ -1,7 +1,7 @@
 /**
  * validate IAM roles from JSON files
  */
-const promisedLife = require('promised-lifestream')
+import { pipeline } from 'stream/promises'
 const StreamUtils = require('@tilfin/stream-utils')
 
 import { promisedStream } from './utils/stream'
@@ -16,7 +16,7 @@ export async function main(inDir: string, varSet: any, opts: any = {}) {
 
   const jsonFiles = await listJsonFiles(inDir)
 
-  await promisedLife([
+  await pipeline([
     StreamUtils.readArray(jsonFiles),
     promisedStream((filePath: string) => readRoleFile(filePath, varSet)),
     promisedStream((file: RoleEntry) => validator.validate(file)),

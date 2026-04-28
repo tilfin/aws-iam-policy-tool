@@ -3,7 +3,13 @@
 import { RoleEntry, RoleDocument, RoleNode } from '../aws/role'
 import { iam } from '../aws/iam'
 import { Result, OK, NG, Skip } from '../utils/result'
-import { IAM } from 'aws-sdk'
+import {
+  AddRoleToInstanceProfileCommand,
+  AttachRolePolicyCommand,
+  AttachedPolicy,
+  CreateInstanceProfileCommand,
+  DetachRolePolicyCommand,
+} from '@aws-sdk/client-iam'
 import { RolePolicyPair, diffAttachedPolicies } from '../aws/attach'
 import { createRole } from '../aws/operation'
 import { asError } from '../utils/error'
@@ -105,7 +111,7 @@ export class RoleRegisterer {
     }
 
     try {
-      const data = await iam.createInstanceProfile(params).promise()
+      const data = await iam.send(new CreateInstanceProfileCommand(params))
       results.push(OK('Created InstanceProfile: %1', roleName))
       return data.InstanceProfile
     } catch (err) {
@@ -130,7 +136,7 @@ export class RoleRegisterer {
     }
 
     try {
-      iam.addRoleToInstanceProfile(params).promise()
+      await iam.send(new AddRoleToInstanceProfileCommand(params))
       results.push(
         OK('Added InstanceProfile: %1 to Role: %2', [profileName, roleName])
       )
@@ -146,7 +152,7 @@ export class RoleRegisterer {
 
   async _getRolePolicies(role: RoleDocument) {
     const roleName = role.Role.RoleName
-    const policyList = role.AttachedPolicies.map((item: IAM.AttachedPolicy) => {
+    const policyList = role.AttachedPolicies.map((item: AttachedPolicy) => {
       return {
         RoleName: roleName,
         PolicyArn: item.PolicyArn!,
@@ -160,7 +166,7 @@ export class RoleRegisterer {
     const policyName = onlyPolicyName(params.PolicyArn)
 
     try {
-      await iam.attachRolePolicy(params).promise()
+      await iam.send(new AttachRolePolicyCommand(params))
       return OK('Attached %1 on %2', [policyName, params.RoleName])
     } catch (err) {
       const error = asError(err)
@@ -177,7 +183,7 @@ export class RoleRegisterer {
   async _detachRolePolicy(params: RolePolicyPair) {
     const policyName = onlyPolicyName(params.PolicyArn)
 
-    await iam.detachRolePolicy(params).promise()
+    await iam.send(new DetachRolePolicyCommand(params))
     return OK('Detached %1 on %2', [policyName, params.RoleName])
   }
 }

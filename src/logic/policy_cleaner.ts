@@ -1,4 +1,8 @@
-import { IAM } from 'aws-sdk'
+import {
+  DeletePolicyCommand,
+  DeletePolicyVersionCommand,
+  Policy,
+} from '@aws-sdk/client-iam'
 import { OK, NG, Skip, Result } from '../utils/result'
 import { listPolicyVersions } from '../aws/operation'
 import { iam } from '../aws/iam'
@@ -8,7 +12,7 @@ export class PolicyCleaner {
   constructor(opts: any = {}) {
   }
 
-  async delete(policy: IAM.Policy): Promise<Result[]> {
+  async delete(policy: Policy): Promise<Result[]> {
     const results: Result[] = []
 
     try {
@@ -37,8 +41,8 @@ export class PolicyCleaner {
     }
   }
 
-  private async deletePolicy(policy: IAM.Policy) {
-    return iam.deletePolicy({ PolicyArn: policy.Arn! }).promise()
+  private async deletePolicy(policy: Policy) {
+    return iam.send(new DeletePolicyCommand({ PolicyArn: policy.Arn! }))
   }
 
   private async deletePolicyVersion(arn: string, versionId: string) {
@@ -46,6 +50,6 @@ export class PolicyCleaner {
       PolicyArn: arn,
       VersionId: versionId,
     }
-    return iam.deletePolicyVersion(params).promise()
+    return iam.send(new DeletePolicyVersionCommand(params))
   }
 }

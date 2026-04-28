@@ -1,4 +1,4 @@
-import { IAM } from 'aws-sdk'
+import { AttachedPolicy } from '@aws-sdk/client-iam'
 import { getAttachedPoliciesByRole } from './operation'
 
 export interface RolePolicyPair {
@@ -9,7 +9,7 @@ export interface RolePolicyPair {
 
 export async function diffAttachedPolicies(
   roleName: string,
-  newPolicies: IAM.AttachedPolicy[]
+  newPolicies: AttachedPolicy[]
 ) {
   const currentPolicies = await getAttachedPoliciesByRole(roleName)
 
@@ -49,7 +49,7 @@ export async function diffAttachedPolicies(
 
 export function containPolicy(
   target: any[],
-  expected: IAM.AttachedPolicy
+  expected: AttachedPolicy
 ): boolean {
   for (let item of target) {
     if (item.PolicyArn === expected.PolicyArn) return true
