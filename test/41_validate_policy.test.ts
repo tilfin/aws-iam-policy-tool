@@ -40,7 +40,7 @@ describe('validate_policy on change stage', () => {
 +      Action: [
 +        "dynamodb:DeleteTable"
 +      ]
-+      Resource: "arn:aws:dynamodb:ap-northeast-1:633772696324:table/baz-dynamodb-items-test"
++      Resource: "arn:aws:dynamodb:ap-northeast-1:${process.env.ACCOUNT_ID}:table/baz-dynamodb-items-test"
 +    }
    ]
  }
